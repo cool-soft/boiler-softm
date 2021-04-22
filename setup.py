@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='boiler_old',
+    name='boiler_softm',
     version='0.0.1',
     description='',
     url='',
