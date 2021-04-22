@@ -11,9 +11,9 @@ from boiler.weater_info.repository.weather_repository import WeatherRepository
 class OnlineSoftMWeatherForecastRepository(WeatherRepository):
 
     def __init__(self,
-                 server_address="https://lysva.agt.town/",
+                 server_address: str = "https://lysva.agt.town/",
                  weather_data_parser: WeatherDataParser = None,
-                 weather_data_interpolator: WeatherDataInterpolator = None):
+                 weather_data_interpolator: WeatherDataInterpolator = None) -> None:
         self._logger = logging.getLogger(self.__class__.__name__)
         self._logger.debug("Creating instance of the provider")
 
@@ -21,15 +21,17 @@ class OnlineSoftMWeatherForecastRepository(WeatherRepository):
         self._weather_data_parser = weather_data_parser
         self._weather_data_interpolator = weather_data_interpolator
 
-    def set_server_address(self, server_address):
+    def set_server_address(self, server_address: str) -> None:
         self._logger.debug(f"Server address is set to {server_address}")
         self._weather_data_server_address = server_address
 
-    def set_weather_data_parser(self, weather_data_parser: WeatherDataParser):
+    def set_weather_data_parser(self, weather_data_parser: WeatherDataParser) -> None:
         self._logger.debug("Weather data parser is set")
         self._weather_data_parser = weather_data_parser
 
-    async def get_weather_info(self, start_datetime: pd.Timestamp = None, end_datetime: pd.Timestamp = None):
+    async def get_weather_info(self,
+                               start_datetime: pd.Timestamp = None,
+                               end_datetime: pd.Timestamp = None) -> pd.DataFrame:
         self._logger.debug(f"Requested weather info from {start_datetime} to {end_datetime}")
 
         data = await self._get_forecast_from_server()
@@ -45,7 +47,7 @@ class OnlineSoftMWeatherForecastRepository(WeatherRepository):
 
         return weather_df
 
-    async def _get_forecast_from_server(self):
+    async def _get_forecast_from_server(self) -> str:
         self._logger.debug(f"Requesting weather forecast from server {self._weather_data_server_address}")
 
         url = f"{self._weather_data_server_address}/JSON/"
@@ -59,11 +61,11 @@ class OnlineSoftMWeatherForecastRepository(WeatherRepository):
 
         return response_text
 
-    async def set_weather_info(self, weather_df: pd.DataFrame):
+    async def set_weather_info(self, weather_df: pd.DataFrame) -> None:
         raise ValueError("This operation is not supported for this repository type")
 
-    async def update_weather_info(self, weather_df: pd.DataFrame):
+    async def update_weather_info(self, weather_df: pd.DataFrame) -> None:
         raise ValueError("This operation is not supported for this repository type")
 
-    async def delete_weather_info_older_than(self, datetime: pd.Timestamp):
+    async def delete_weather_info_older_than(self, datetime: pd.Timestamp) -> None:
         raise ValueError("This operation is not supported for this repository type")

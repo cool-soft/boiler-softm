@@ -1,4 +1,4 @@
-from boiler_softm.constants import circuits_id as soft_m_circuit_ids
+from boiler_softm.constants import circuit_ids as soft_m_circuit_ids
 from boiler.constants import circuits_id
 
 CIRCUIT_ID_EQUALS = {
