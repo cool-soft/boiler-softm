@@ -1,0 +1,6 @@
+-e git+https://github.com/cool-soft/boiler.git#egg=boiler
+pytest~=6.2.3
+pytest-asyncio~=0.14.0
+pytest-cov~=2.11.1
+pytest-html~=3.1.1
+setuptools~=54.2.0
