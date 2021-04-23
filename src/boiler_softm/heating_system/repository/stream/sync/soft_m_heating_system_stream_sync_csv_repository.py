@@ -4,18 +4,18 @@ from typing import List
 
 import pandas as pd
 from boiler.parsing_utils.utils import filter_by_timestamp_closed
-from boiler.heating_system.repository.heating_system_repository import HeatingSystemRepository
+from boiler.heating_system.repository.stream.sync.heating_system_stream_sync_repository \
+    import HeatingSystemStreamSyncRepository
 from boiler.heating_system.parsers.heating_system_data_parser import HeatingSystemDataParser
 from boiler.heating_system.interpolators.heating_system_data_interpolator import HeatingSystemDataInterpolator
-from boiler.constants import circuits_id, column_names
+from boiler.constants import circuit_ids, column_names
 
 
-class SoftMCSVHeatingSystemRepository(HeatingSystemRepository):
-
+class SoftMHeatingSystemStreamSyncCSVRepository(HeatingSystemStreamSyncRepository):
     FILENAME_EXT = ".csv"
 
     def __init__(self,
-                 circuit_id: str = circuits_id.HEATING_CIRCUIT,
+                 circuit_id: str = circuit_ids.HEATING_CIRCUIT,
                  storage_path: str = "./storage",
                  parser: HeatingSystemDataParser = None,
                  interpolator: HeatingSystemDataInterpolator = None,
@@ -72,7 +72,8 @@ class SoftMCSVHeatingSystemRepository(HeatingSystemRepository):
         with open(dataset_path, encoding=self._encoding) as f:
             heating_df = self._parser.parse(f)
 
-        heating_circuit_df = heating_df[heating_df[column_names.CIRCUIT_ID] == circuits_id.HEATING_CIRCUIT].copy()
+        heating_circuit_df = heating_df[heating_df[column_names.CIRCUIT_ID] ==
+                                        circuit_ids.HEATING_CIRCUIT].copy()
         del heating_circuit_df[column_names.CIRCUIT_ID]
 
         home_heating_circuit_df = self._interpolator.interpolate_data(

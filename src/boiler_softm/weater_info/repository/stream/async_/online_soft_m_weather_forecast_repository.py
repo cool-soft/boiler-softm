@@ -5,10 +5,11 @@ import pandas as pd
 from boiler.constants import column_names
 from boiler.weater_info.interpolators.weather_data_interpolator import WeatherDataInterpolator
 from boiler.weater_info.parsers.weather_data_parser import WeatherDataParser
-from boiler.weater_info.repository.weather_repository import WeatherRepository
+from boiler.weater_info.repository.stream.async_.weather_stream_async_repository \
+    import WeatherStreamAsyncRepository
 
 
-class OnlineSoftMWeatherForecastRepository(WeatherRepository):
+class OnlineSoftMWeatherForecastRepository(WeatherStreamAsyncRepository):
 
     def __init__(self,
                  server_address: str = "https://lysva.agt.town/",
@@ -62,10 +63,4 @@ class OnlineSoftMWeatherForecastRepository(WeatherRepository):
         return response_text
 
     async def set_weather_info(self, weather_df: pd.DataFrame) -> None:
-        raise ValueError("This operation is not supported for this repository type")
-
-    async def update_weather_info(self, weather_df: pd.DataFrame) -> None:
-        raise ValueError("This operation is not supported for this repository type")
-
-    async def delete_weather_info_older_than(self, datetime: pd.Timestamp) -> None:
         raise ValueError("This operation is not supported for this repository type")
