@@ -9,7 +9,7 @@ from boiler.weater_info.repository.stream.async_.weather_stream_async_repository
     import WeatherStreamAsyncRepository
 
 
-class OnlineSoftMWeatherForecastRepository(WeatherStreamAsyncRepository):
+class SoftMOnlineWeatherForecastStreamAsyncRepository(WeatherStreamAsyncRepository):
 
     def __init__(self,
                  server_address: str = "https://lysva.agt.town/",
