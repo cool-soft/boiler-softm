@@ -2,11 +2,12 @@ import logging
 
 import aiohttp
 import pandas as pd
-from boiler.temp_graph.repository.temp_graph_repository import TempGraphRepository
+from boiler.temp_graph.repository.stream.async_.temp_graph_stream_async_repository\
+    import TempGraphStreamAsyncRepository
 from boiler.temp_graph.parsers.temp_graph_parser import TempGraphParser
 
 
-class OnlineSoftMTempGraphRepository(TempGraphRepository):
+class SoftMOnlineStreamAsyncTempGraphRepository(TempGraphStreamAsyncRepository):
 
     def __init__(self,
                  server_address: str = "https://lysva.agt.town/",
