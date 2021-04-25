@@ -50,7 +50,7 @@ class SoftMHeatingSystemStreamSyncCSVRepository(HeatingSystemStreamSyncRepositor
         self._encoding = encoding
 
     def list(self) -> List[str]:
-        self._logger.debug("Requested listing of repository")
+        self._logger.debug("Requested listing of io")
 
         csv_filenames = []
         for filename_with_ext in os.listdir(self._storage_path):
@@ -92,7 +92,7 @@ class SoftMHeatingSystemStreamSyncCSVRepository(HeatingSystemStreamSyncRepositor
         return heating_circuit_df
 
     def update_dataset(self, dataset_id: str, dataset: pd.DataFrame) -> None:
-        raise ValueError("Operation not supported for this type of repository")
+        raise ValueError("Operation not supported for this type of io")
 
     def set_dataset(self, dataset_id: str, dataset: pd.DataFrame) -> None:
-        raise ValueError("Operation not supported for this type of repository")
+        raise ValueError("Operation not supported for this type of io")

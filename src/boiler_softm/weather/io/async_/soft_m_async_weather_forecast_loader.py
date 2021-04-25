@@ -1,43 +1,41 @@
+import asyncio
+import io
 import logging
+from typing import Optional
 
 import aiohttp
 import pandas as pd
 from boiler.constants import column_names
-from boiler.weater_info.interpolators.weather_data_interpolator import WeatherDataInterpolator
-from boiler.weater_info.parsers.weather_data_parser import WeatherDataParser
-from boiler.weater_info.repository.stream.async_.weather_stream_async_repository \
-    import WeatherStreamAsyncRepository
+from boiler.weather.io.sync.sync_weather_text_reader import SyncWeatherTextReader
+from boiler.weather.io.async_.async_weather_loader import AsyncWeatherLoader
 
 
-class SoftMOnlineWeatherForecastStreamAsyncRepository(WeatherStreamAsyncRepository):
+class SoftMAsyncWeatherForecastOnlineLoader(AsyncWeatherLoader):
 
     def __init__(self,
                  server_address: str = "https://lysva.agt.town/",
-                 weather_data_parser: WeatherDataParser = None,
-                 weather_data_interpolator: WeatherDataInterpolator = None) -> None:
+                 weather_reader: SyncWeatherTextReader = None) -> None:
         self._logger = logging.getLogger(self.__class__.__name__)
         self._logger.debug("Creating instance of the provider")
 
         self._weather_data_server_address = server_address
-        self._weather_data_parser = weather_data_parser
-        self._weather_data_interpolator = weather_data_interpolator
+        self._weather_reader = weather_reader
 
     def set_server_address(self, server_address: str) -> None:
         self._logger.debug(f"Server address is set to {server_address}")
         self._weather_data_server_address = server_address
 
-    def set_weather_data_parser(self, weather_data_parser: WeatherDataParser) -> None:
-        self._logger.debug("Weather data parser is set")
-        self._weather_data_parser = weather_data_parser
+    def set_weather_reader(self, weather_reader: SyncWeatherTextReader) -> None:
+        self._logger.debug("Weather reader is set")
+        self._weather_reader = weather_reader
 
-    async def get_weather_info(self,
-                               start_datetime: pd.Timestamp = None,
-                               end_datetime: pd.Timestamp = None) -> pd.DataFrame:
+    async def load_weather(self,
+                           start_datetime: Optional[pd.Timestamp] = None,
+                           end_datetime: Optional[pd.Timestamp] = None) -> pd.DataFrame:
         self._logger.debug(f"Requested weather info from {start_datetime} to {end_datetime}")
 
-        data = await self._get_forecast_from_server()
-        weather_df = self._weather_data_parser.parse_weather_data(data)
-        weather_df = self._weather_data_interpolator.interpolate_weather_data(weather_df)
+        weather_forecast_as_str = await self._get_forecast_from_server()
+        weather_df = await self._read_weather_forecast(weather_forecast_as_str)
 
         if start_datetime is not None:
             weather_df = weather_df[weather_df[column_names.TIMESTAMP] >= start_datetime]
@@ -46,6 +44,18 @@ class SoftMOnlineWeatherForecastStreamAsyncRepository(WeatherStreamAsyncReposito
 
         self._logger.debug(f"Gathered {len(weather_df)} weather info items")
 
+        return weather_df
+
+    async def _read_weather_forecast(self, weather_forecast_as_str):
+        self._logger.debug("Reading weather forecast in executor")
+        weather_forecast_as_text_io = io.StringIO(weather_forecast_as_str)
+        loop = asyncio.get_running_loop()
+        weather_df = await loop.run_in_executor(
+            None,
+            self._weather_reader.read_weather_from_text_io,
+            weather_forecast_as_text_io
+        )
+        self._logger.debug("Weather forecast is read")
         return weather_df
 
     async def _get_forecast_from_server(self) -> str:
@@ -63,4 +73,4 @@ class SoftMOnlineWeatherForecastStreamAsyncRepository(WeatherStreamAsyncReposito
         return response_text
 
     async def set_weather_info(self, weather_df: pd.DataFrame) -> None:
-        raise ValueError("This operation is not supported for this repository type")
+        raise ValueError("This operation is not supported for this io type")

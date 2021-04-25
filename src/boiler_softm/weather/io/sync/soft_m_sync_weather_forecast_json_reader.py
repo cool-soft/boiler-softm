@@ -1,16 +1,16 @@
 import logging
-from typing import Dict
+from typing import Dict, TextIO
 
 import pandas as pd
 from dateutil import tz
-from boiler.weater_info.parsers.weather_data_parser import WeatherDataParser
+from boiler.weather.io.sync.sync_weather_text_reader import SyncWeatherTextReader
 from boiler.constants import column_names
 
 import boiler_softm.constants.column_names as soft_m_column_names
 from boiler_softm.constants import column_names_equal as soft_m_column_names_equal
 
 
-class SoftMJSONWeatherDataParser(WeatherDataParser):
+class SoftMSyncWeatherForecastJSONReader(SyncWeatherTextReader):
 
     # TODO: указать тип данных для временной зоны
     def __init__(self, weather_data_timezone=tz.UTC) -> None:
@@ -28,14 +28,12 @@ class SoftMJSONWeatherDataParser(WeatherDataParser):
         self._logger.debug("Column names equals are set")
         self._column_names_equals = names_equal
 
-    # TODO: указать тип данных weather_data
-    def parse_weather_data(self, weather_data) -> pd.DataFrame:
-        self._logger.debug("Parsing weather data")
-
-        df = pd.read_json(weather_data, convert_dates=False)
+    def read_weather_from_text_io(self, text_io: TextIO) -> pd.DataFrame:
+        self._logger.debug("Parsing weather")
+        df = pd.read_json(text_io, convert_dates=False)
         self._rename_columns(df)
         self._convert_date_and_time_to_timestamp(df)
-
+        self._logger.debug(f"Weather is parsed")
         return df
 
     def _rename_columns(self, df: pd.DataFrame) -> None:

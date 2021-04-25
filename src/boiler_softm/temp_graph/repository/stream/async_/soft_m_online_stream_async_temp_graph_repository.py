@@ -46,4 +46,4 @@ class SoftMOnlineStreamAsyncTempGraphRepository(TempGraphStreamAsyncRepository):
         return response_text
 
     async def set_temp_graph(self, temp_graph: pd.DataFrame) -> None:
-        raise ValueError("Operation not supported for this type of repository")
+        raise ValueError("Operation not supported for this type of io")
