@@ -5,9 +5,9 @@ from typing import Optional
 
 import aiohttp
 import pandas as pd
-from boiler.constants import column_names
-from boiler.weather.io.sync.sync_weather_text_reader import SyncWeatherTextReader
+from boiler.parsing_utils.utils import filter_by_timestamp_closed
 from boiler.weather.io.async_.async_weather_loader import AsyncWeatherLoader
+from boiler.weather.io.sync.sync_weather_text_reader import SyncWeatherTextReader
 
 
 class SoftMAsyncWeatherForecastOnlineLoader(AsyncWeatherLoader):
@@ -32,30 +32,11 @@ class SoftMAsyncWeatherForecastOnlineLoader(AsyncWeatherLoader):
     async def load_weather(self,
                            start_datetime: Optional[pd.Timestamp] = None,
                            end_datetime: Optional[pd.Timestamp] = None) -> pd.DataFrame:
-        self._logger.debug(f"Requested weather info from {start_datetime} to {end_datetime}")
-
+        self._logger.debug(f"Requested weather forecast from {start_datetime} to {end_datetime}")
         weather_forecast_as_str = await self._get_forecast_from_server()
         weather_df = await self._read_weather_forecast(weather_forecast_as_str)
-
-        if start_datetime is not None:
-            weather_df = weather_df[weather_df[column_names.TIMESTAMP] >= start_datetime]
-        if end_datetime is not None:
-            weather_df = weather_df[weather_df[column_names.TIMESTAMP] <= end_datetime]
-
-        self._logger.debug(f"Gathered {len(weather_df)} weather info items")
-
-        return weather_df
-
-    async def _read_weather_forecast(self, weather_forecast_as_str):
-        self._logger.debug("Reading weather forecast in executor")
-        weather_forecast_as_text_io = io.StringIO(weather_forecast_as_str)
-        loop = asyncio.get_running_loop()
-        weather_df = await loop.run_in_executor(
-            None,
-            self._weather_reader.read_weather_from_text_io,
-            weather_forecast_as_text_io
-        )
-        self._logger.debug("Weather forecast is read")
+        weather_df = filter_by_timestamp_closed(weather_df, start_datetime, end_datetime)
+        self._logger.debug(f"Gathered {len(weather_df)} weather forecast items")
         return weather_df
 
     async def _get_forecast_from_server(self) -> str:
@@ -72,5 +53,14 @@ class SoftMAsyncWeatherForecastOnlineLoader(AsyncWeatherLoader):
 
         return response_text
 
-    async def set_weather_info(self, weather_df: pd.DataFrame) -> None:
-        raise ValueError("This operation is not supported for this io type")
+    async def _read_weather_forecast(self, weather_forecast_as_str: str) -> pd.DataFrame:
+        self._logger.debug("Reading weather forecast in executor")
+        weather_forecast_as_text_io = io.StringIO(weather_forecast_as_str)
+        loop = asyncio.get_running_loop()
+        weather_df = await loop.run_in_executor(
+            None,
+            self._weather_reader.read_weather_from_text_io,
+            weather_forecast_as_text_io
+        )
+        self._logger.debug("Weather forecast is read")
+        return weather_df
