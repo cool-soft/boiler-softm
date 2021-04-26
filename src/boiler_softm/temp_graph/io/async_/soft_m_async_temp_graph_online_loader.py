@@ -50,7 +50,6 @@ class SoftMAsyncTempGraphOnlineLoader(AsyncTempGraphLoader):
 
     async def _read_temp_graph(self, raw_temp_graph: bytes) -> pd.DataFrame:
         self._logger.debug("Reading temp graph in executor")
-
         loop = asyncio.get_running_loop()
         with io.BytesIO(raw_temp_graph) as binary_stream:
             temp_graph_df = await loop.run_in_executor(
