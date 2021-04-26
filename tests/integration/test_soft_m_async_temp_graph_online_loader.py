@@ -1,8 +1,7 @@
 import pytest
+from boiler.constants import column_names
 # noinspection PyProtectedMember
 from pandas.api.types import is_numeric_dtype
-from boiler.constants import column_names
-
 
 from boiler_softm.temp_graph.io.async_.soft_m_async_temp_graph_online_loader import SoftMAsyncTempGraphOnlineLoader
 from boiler_softm.temp_graph.io.sync.soft_m_sync_temp_graph_json_reader import SoftMSyncTempGraphJSONReader
