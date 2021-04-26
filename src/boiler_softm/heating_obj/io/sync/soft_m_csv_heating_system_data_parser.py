@@ -8,7 +8,7 @@ from boiler.constants import circuit_ids
 from boiler.heating_obj.io.sync.sync_heating_obj_reader import SyncHeatingObjReader
 from boiler.parsing_utils.datetime_parsing import parse_datetime
 
-from boiler_softm.constants import circuit_ids_equal as soft_m_circuit_ids_equal
+from boiler_softm.constants import circuit_ids_equal as soft_m_circuit_ids_equal, parsing_patterns
 from boiler_softm.constants import column_names as soft_m_column_names
 from boiler_softm.constants import column_names_equal as soft_m_column_names_equals
 
@@ -31,10 +31,7 @@ class SoftMSyncHeatingObjCSVReader(SyncHeatingObjReader):
         self._timestamp_timezone = timestamp_timezone
 
         if timestamp_parse_patterns is None:
-            timestamp_parse_patterns = (
-                r"(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})\s(?P<hour>\d{2}):(?P<min>\d{2}).{7}",
-                r"(?P<day>\d{2})\.(?P<month>\d{2})\.(?P<year>\d{4})\s(?P<hour>\d{1,2}):(?P<min>\d{2})"
-            )
+            timestamp_parse_patterns = parsing_patterns.HEATING_OBJ_TIMESTAMP
         self._timestamp_parse_patterns = timestamp_parse_patterns
 
         self._need_circuit = need_circuit
