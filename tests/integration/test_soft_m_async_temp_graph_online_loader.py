@@ -1,0 +1,35 @@
+import pytest
+# noinspection PyProtectedMember
+from pandas.api.types import is_numeric_dtype
+from boiler.constants import column_names
+
+
+from boiler_softm.temp_graph.io.async_.soft_m_async_temp_graph_online_loader import SoftMAsyncTempGraphOnlineLoader
+from boiler_softm.temp_graph.io.sync.soft_m_sync_temp_graph_json_reader import SoftMSyncTempGraphJSONReader
+
+
+class TestSoftMAsyncTempGraphOnlineLoader:
+
+    @pytest.fixture
+    def reader(self):
+        return SoftMSyncTempGraphJSONReader()
+
+    @pytest.fixture
+    def loader(self, reader):
+        return SoftMAsyncTempGraphOnlineLoader(
+            reader=reader
+        )
+
+    @pytest.mark.asyncio
+    async def test_soft_m_async_temp_graph_online_loader(self, loader):
+        temp_graph_df = await loader.load_temp_graph()
+
+        assert not temp_graph_df.empty
+
+        assert column_names.WEATHER_TEMP in temp_graph_df.columns
+        assert column_names.FORWARD_PIPE_COOLANT_TEMP in temp_graph_df.columns
+        assert column_names.BACKWARD_PIPE_COOLANT_TEMP in temp_graph_df.columns
+
+        assert is_numeric_dtype(temp_graph_df[column_names.WEATHER_TEMP])
+        assert is_numeric_dtype(temp_graph_df[column_names.FORWARD_PIPE_COOLANT_TEMP])
+        assert is_numeric_dtype(temp_graph_df[column_names.BACKWARD_PIPE_COOLANT_TEMP])
