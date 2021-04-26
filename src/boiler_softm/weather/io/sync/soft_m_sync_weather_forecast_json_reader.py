@@ -1,24 +1,32 @@
+import io
 import logging
-from typing import Dict, TextIO
+from typing import Dict, BinaryIO
 
 import pandas as pd
-from dateutil import tz
-from boiler.weather.io.sync.sync_weather_text_reader import SyncWeatherTextReader
 from boiler.constants import column_names
+from boiler.weather.io.sync.sync_weather_reader import SyncWeatherReader
 
 import boiler_softm.constants.column_names as soft_m_column_names
 from boiler_softm.constants import column_names_equal as soft_m_column_names_equal
 
 
-class SoftMSyncWeatherForecastJSONReader(SyncWeatherTextReader):
+class SoftMSyncWeatherForecastJSONReader(SyncWeatherReader):
 
     # TODO: указать тип данных для временной зоны
-    def __init__(self, weather_data_timezone=tz.UTC) -> None:
+    def __init__(self,
+                 encoding: str = "utf-8",
+                 weather_data_timezone=None) -> None:
         self._logger = logging.getLogger(self.__class__.__name__)
         self._logger.debug("Creating instance of the provider")
 
         self._weather_data_timezone = weather_data_timezone
+        self._encoding = encoding
+
         self._column_names_equals = soft_m_column_names_equal.WEATHER_INFO_COLUMN_EQUALS
+
+    def set_encoding(self, encoding: str):
+        self._logger.debug(f"Encoding is set to {encoding}")
+        self._encoding = encoding
 
     def set_weather_data_timezone(self, timezone) -> None:
         self._logger.debug(f"Weather timezone is set to {timezone}")
@@ -28,9 +36,10 @@ class SoftMSyncWeatherForecastJSONReader(SyncWeatherTextReader):
         self._logger.debug("Column names equals are set")
         self._column_names_equals = names_equal
 
-    def read_weather_from_text_io(self, text_io: TextIO) -> pd.DataFrame:
+    def read_weather_from_binary_stream(self, binary_stream: BinaryIO) -> pd.DataFrame:
         self._logger.debug("Parsing weather")
-        df = pd.read_json(text_io, convert_dates=False)
+        with io.TextIOWrapper(binary_stream, encoding=self._encoding) as text_stream:
+            df = pd.read_json(text_stream, convert_dates=False)
         self._rename_columns(df)
         self._convert_date_and_time_to_timestamp(df)
         self._logger.debug(f"Weather is parsed")
