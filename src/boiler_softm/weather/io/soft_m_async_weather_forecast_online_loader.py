@@ -10,6 +10,7 @@ from boiler.weather.io.async_.async_weather_loader import AsyncWeatherLoader
 from boiler.weather.io.sync.sync_weather_reader import SyncWeatherReader
 
 
+# TODO: FilterAlgorithm - LeftClosed
 class SoftMAsyncWeatherForecastOnlineLoader(AsyncWeatherLoader):
 
     def __init__(self,

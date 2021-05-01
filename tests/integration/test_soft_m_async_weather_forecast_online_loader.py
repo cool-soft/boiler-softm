@@ -4,9 +4,9 @@ from boiler.constants import column_names
 from dateutil.tz import gettz
 from pandas.api.types import is_numeric_dtype, is_datetime64tz_dtype
 
-from boiler_softm.weather.io.async_.soft_m_async_weather_forecast_online_loader import \
+from boiler_softm.weather.io.soft_m_async_weather_forecast_online_loader import \
     SoftMAsyncWeatherForecastOnlineLoader
-from boiler_softm.weather.io.sync.soft_m_sync_weather_forecast_json_reader import SoftMSyncWeatherForecastJSONReader
+from boiler_softm.weather.io.soft_m_sync_weather_forecast_json_reader import SoftMSyncWeatherForecastJSONReader
 
 
 class TestSoftMAsyncWeatherForecastOnlineLoader:
