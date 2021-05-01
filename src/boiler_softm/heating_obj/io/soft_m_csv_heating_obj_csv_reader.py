@@ -1,28 +1,29 @@
 import io
 import logging
-from typing import List, Dict, BinaryIO, Optional
+from typing import List, BinaryIO
 
 import pandas as pd
-from dateutil.tz import gettz
 from boiler.constants import circuit_ids
-from boiler.heating_obj.io.sync.sync_heating_obj_reader import SyncHeatingObjReader
-from boiler.parsing_utils.datetime_parsing import parse_datetime
+from boiler.data_processing.other import parse_datetime
+from boiler.heating_obj.io.abstract_sync_heating_obj_reader import AbstractSyncHeatingObjReader
+from dateutil.tz import gettz
 
 from boiler_softm.constants import circuit_ids_equal as soft_m_circuit_ids_equal, parsing_patterns
 from boiler_softm.constants import column_names as soft_m_column_names
 from boiler_softm.constants import column_names_equal as soft_m_column_names_equals
 
 
-class SoftMSyncHeatingObjCSVReader(SyncHeatingObjReader):
+class SoftMSyncHeatingObjCSVReader(AbstractSyncHeatingObjReader):
 
     def __init__(self,
+                 timestamp_parse_patterns: List[str],
+                 timestamp_timezone,
+                 need_columns: List[str],
+                 float_columns: List[str],
+                 water_temp_columns: List[str],
                  encoding: str = "utf-8",
                  need_circuit: str = circuit_ids.HEATING_CIRCUIT,
-                 timestamp_parse_patterns: Optional[List[str]] = None,
-                 timestamp_timezone=None,
-                 need_columns: Optional[List[str]] = None,
-                 float_columns: Optional[List[str]] = None,
-                 water_temp_columns: Optional[List[str]] = None) -> None:
+                 ) -> None:
         self._logger = logging.getLogger(self.__class__.__name__)
         self._logger.debug("Creating instance")
 
@@ -70,34 +71,9 @@ class SoftMSyncHeatingObjCSVReader(SyncHeatingObjReader):
         self._circuit_id_equals = soft_m_circuit_ids_equal.CIRCUIT_ID_EQUALS
         self._column_names_equals = soft_m_column_names_equals.HEATING_SYSTEM_COLUMN_NAMES_EQUALS
 
-    def set_encoding(self, encoding: str):
-        self._logger.debug(f"Encoding is set to {encoding}")
-        self._encoding = encoding
-
-    def set_timestamp_timezone(self, timezone) -> None:
-        self._logger.debug(f"Timezone is set to {timezone}")
-        self._timestamp_timezone = timezone
-
-    def set_timestamp_parse_patterns(self, patterns: List[str]) -> None:
-        self._logger.debug("Timestamp parse patterns is set")
-        self._timestamp_parse_patterns = patterns
-
-    def set_float_columns(self, columns: List[str]) -> None:
-        self._float_columns = columns
-
-    def set_need_circuit(self, need_circuit: str) -> None:
-        self._need_circuit = need_circuit
-
-    def set_need_columns(self, need_columns: List[str]) -> None:
-        self._need_columns = need_columns
-
-    def set_column_names_equals(self, column_names_equals: Dict[str, str]) -> None:
-        self._column_names_equals = column_names_equals
-
-    def set_circuit_id_equals(self, circuit_id_equals: Dict[str, str]) -> None:
-        self._circuit_id_equals = circuit_id_equals
-
-    def read_heating_obj_from_binary_stream(self, binary_stream: BinaryIO) -> pd.DataFrame:
+    def read_heating_obj_from_binary_stream(self,
+                                            binary_stream: BinaryIO
+                                            ) -> pd.DataFrame:
         self._logger.debug("Loading text_stream")
 
         with io.TextIOWrapper(binary_stream, encoding=self._encoding) as text_stream:
@@ -158,5 +134,5 @@ class SoftMSyncHeatingObjCSVReader(SyncHeatingObjReader):
         self._logger.debug("Dividing incorrect water temp")
         for column_name in self._water_temp_columns:
             df[column_name] = df[column_name].apply(
-                lambda water_temp: water_temp > 120 and water_temp / 100 or water_temp
+                lambda water_temp: water_temp > 100 and water_temp / 100 or water_temp
             )

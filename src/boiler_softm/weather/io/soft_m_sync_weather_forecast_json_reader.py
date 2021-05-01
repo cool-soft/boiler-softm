@@ -1,16 +1,16 @@
 import io
 import logging
-from typing import Dict, BinaryIO
+from typing import BinaryIO
 
 import pandas as pd
 from boiler.constants import column_names
-from boiler.weather.io.sync.sync_weather_reader import SyncWeatherReader
+from boiler.weather.io.abstract_sync_weather_reader import AbstractSyncWeatherReader
 
 import boiler_softm.constants.column_names as soft_m_column_names
 from boiler_softm.constants import column_names_equal as soft_m_column_names_equal
 
 
-class SoftMSyncWeatherForecastJSONReader(SyncWeatherReader):
+class SoftMSyncWeatherForecastJSONReader(AbstractSyncWeatherReader):
 
     # TODO: указать тип данных для временной зоны
     def __init__(self,
@@ -23,18 +23,6 @@ class SoftMSyncWeatherForecastJSONReader(SyncWeatherReader):
         self._encoding = encoding
 
         self._column_names_equals = soft_m_column_names_equal.WEATHER_INFO_COLUMN_EQUALS
-
-    def set_encoding(self, encoding: str):
-        self._logger.debug(f"Encoding is set to {encoding}")
-        self._encoding = encoding
-
-    def set_weather_data_timezone(self, timezone) -> None:
-        self._logger.debug(f"Weather timezone is set to {timezone}")
-        self._weather_data_timezone = timezone
-
-    def set_column_names_equal(self, names_equal: Dict[str, str]) -> None:
-        self._logger.debug("Column names equals are set")
-        self._column_names_equals = names_equal
 
     def read_weather_from_binary_stream(self, binary_stream: BinaryIO) -> pd.DataFrame:
         self._logger.debug("Parsing weather")
