@@ -11,7 +11,7 @@ from boiler.data_processing.value_interpolation_algorithm import AbstractValueIn
 from boiler.heating_obj.processing import AbstractHeatingObjProcessor
 
 
-class SoftMLysvaHeatingObjProcessor(AbstractHeatingObjProcessor):
+class SoftMHeatingObjProcessor(AbstractHeatingObjProcessor):
 
     def __init__(self,
                  columns_to_interpolate: List[str],
