@@ -7,7 +7,7 @@ from boiler.constants import column_names
 from boiler.weather.io.abstract_sync_weather_reader import AbstractSyncWeatherReader
 
 import boiler_softm.constants.column_names as soft_m_column_names
-from boiler_softm.constants import column_names_equal as soft_m_column_names_equal
+import boiler_softm.constants.processing_parameters
 
 
 class SoftMSyncWeatherForecastJSONReader(AbstractSyncWeatherReader):
@@ -22,7 +22,7 @@ class SoftMSyncWeatherForecastJSONReader(AbstractSyncWeatherReader):
         self._weather_data_timezone = weather_data_timezone
         self._encoding = encoding
 
-        self._column_names_equals = soft_m_column_names_equal.WEATHER_INFO_COLUMN_EQUALS
+        self._column_names_equals = boiler_softm.constants.processing_parameters.WEATHER_INFO_COLUMN_EQUALS
 
     def read_weather_from_binary_stream(self, binary_stream: BinaryIO) -> pd.DataFrame:
         self._logger.debug("Parsing weather")

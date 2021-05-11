@@ -1,15 +1,14 @@
-import io
 import logging
 from typing import List, BinaryIO
 
 import pandas as pd
-from boiler.constants import circuit_ids, column_names
+from boiler.constants import column_names
 from boiler.data_processing.other import parse_datetime
 from boiler.heating_obj.io.abstract_sync_heating_obj_reader import AbstractSyncHeatingObjReader
 
 from boiler_softm.constants import circuit_ids_equal as soft_m_circuit_ids_equal
 from boiler_softm.constants import column_names as soft_m_column_names
-from boiler_softm.constants import column_names_equal as soft_m_column_names_equals
+from boiler_softm.constants import processing_parameters
 
 
 class SoftMSyncHeatingObjCSVReader(AbstractSyncHeatingObjReader):
@@ -20,8 +19,8 @@ class SoftMSyncHeatingObjCSVReader(AbstractSyncHeatingObjReader):
                  need_columns: List[str],
                  float_columns: List[str],
                  water_temp_columns: List[str],
-                 encoding: str = "utf-8",
-                 need_circuit: str = circuit_ids.HEATING_CIRCUIT,
+                 need_circuit: str,
+                 encoding: str = "utf-8"
                  ) -> None:
         self._logger = logging.getLogger(self.__class__.__name__)
         self._logger.debug("Creating instance")
@@ -35,18 +34,22 @@ class SoftMSyncHeatingObjCSVReader(AbstractSyncHeatingObjReader):
         self._water_temp_columns = water_temp_columns
 
         self._circuit_id_equals = soft_m_circuit_ids_equal.CIRCUIT_ID_EQUALS
-        self._column_names_equals = soft_m_column_names_equals.HEATING_OBJ_COLUMN_NAMES_EQUALS
+        self._column_names_equals = processing_parameters.HEATING_OBJ_COLUMN_NAMES_EQUALS
 
     def read_heating_obj_from_binary_stream(self,
                                             binary_stream: BinaryIO
                                             ) -> pd.DataFrame:
         self._logger.debug("Loading")
 
-        with io.TextIOWrapper(binary_stream, encoding=self._encoding) as text_stream:
-            df = pd.read_csv(text_stream, sep=";", low_memory=False, parse_dates=False)
+        df = pd.read_csv(
+            binary_stream,
+            sep=";",
+            low_memory=False,
+            parse_dates=False,
+            encoding=self._encoding
+        )
 
         self._logger.debug("Parsing")
-        df = self._convert_circuit_ids(df)
         df = self._exclude_unused_circuits(df)
         df = self._rename_equal_columns(df)
         df = self._parse_timestamp(df)
@@ -54,6 +57,13 @@ class SoftMSyncHeatingObjCSVReader(AbstractSyncHeatingObjReader):
         df = self._divide_incorrect_hot_water_temp(df)
         df = self._exclude_unused_columns(df)
 
+        return df
+
+    def _exclude_unused_circuits(self, df: pd.DataFrame) -> pd.DataFrame:
+        self._logger.debug("Excluding unused circuits")
+        renamed_circuits = \
+            df[soft_m_column_names.HEATING_SYSTEM_CIRCUIT_ID].apply(str).replace(self._circuit_id_equals)
+        df = df[renamed_circuits == self._need_circuit].copy()
         return df
 
     def _rename_equal_columns(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -66,22 +76,10 @@ class SoftMSyncHeatingObjCSVReader(AbstractSyncHeatingObjReader):
         df = df.rename(columns=column_names_equals)
         return df
 
-    def _convert_circuit_ids(self, df: pd.DataFrame) -> pd.DataFrame:
-        self._logger.debug("Converting circuit ids")
-        df = df.copy()
-        df[column_names.CIRCUIT_ID] = \
-            df[soft_m_column_names.HEATING_SYSTEM_CIRCUIT_ID].apply(str).replace(self._circuit_id_equals)
-        return df
-
-    def _exclude_unused_circuits(self, df: pd.DataFrame) -> pd.DataFrame:
-        self._logger.debug("Excluding unused circuits")
-        df = df[df[column_names.CIRCUIT_ID] == self._need_circuit].copy()
-        return df
-
     def _parse_timestamp(self, df: pd.DataFrame) -> pd.DataFrame:
         self._logger.debug("Parsing datetime")
         df = df.copy()
-        df[column_names.TIMESTAMP] = df[soft_m_column_names.HEATING_SYSTEM_TIMESTAMP].apply(
+        df[column_names.TIMESTAMP] = df[column_names.TIMESTAMP].apply(
             parse_datetime, args=(self._timestamp_parse_patterns, self._timestamp_timezone)
         )
         return df
@@ -105,5 +103,5 @@ class SoftMSyncHeatingObjCSVReader(AbstractSyncHeatingObjReader):
 
     def _exclude_unused_columns(self, df: pd.DataFrame) -> pd.DataFrame:
         self._logger.debug("Excluding unused columns")
-        df = df[list(self._need_columns)].copy()
+        df = df[self._need_columns].copy()
         return df
