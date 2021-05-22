@@ -8,5 +8,6 @@ venv/
 src/*.egg-info/
 
 .coverage
-coverage_html_report/
+coverage-report-html/
+coverage-report.xml
 pytest-report.html
