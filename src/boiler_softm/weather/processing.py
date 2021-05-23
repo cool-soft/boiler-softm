@@ -50,6 +50,7 @@ class SoftMWeatherProcessor(AbstractWeatherProcessor):
         )
         return weather_df
 
+    # noinspection PyMethodMayBeStatic
     def _drop_duplicates_by_timestamp(self,
                                       weather_df: pd.DataFrame
                                       ) -> pd.DataFrame:
