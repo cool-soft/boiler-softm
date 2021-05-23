@@ -24,7 +24,7 @@ class SoftMAsyncTempGraphOnlineLoader(AbstractAsyncTempGraphLoader):
         self._sync_executor = sync_executor
 
     async def load_temp_graph(self) -> pd.DataFrame:
-        self._logger.debug(f"Requested temp graph")
+        self._logger.debug("Requested temp graph")
         temp_graph_as_bytes = await self._get_temp_graph_from_server()
         temp_graph_df = await self._read_temp_graph(temp_graph_as_bytes)
         return temp_graph_df
