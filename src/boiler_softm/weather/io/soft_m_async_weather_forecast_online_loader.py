@@ -32,7 +32,7 @@ class SoftMAsyncWeatherForecastOnlineLoader(AbstractAsyncWeatherLoader):
                            start_datetime: Optional[pd.Timestamp] = None,
                            end_datetime: Optional[pd.Timestamp] = None
                            ) -> pd.DataFrame:
-        self._logger.debug("Requested weather forecast from {start_datetime} to {end_datetime}")
+        self._logger.debug(f"Requested weather forecast from {start_datetime} to {end_datetime}")
         raw_weather_forecast = await self._get_forecast_from_server()
         weather_df = await self._read_weather_forecast(raw_weather_forecast)
         weather_df = self._filter_by_timestamp(end_datetime, start_datetime, weather_df)
