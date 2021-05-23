@@ -30,7 +30,7 @@ class SoftMSyncWeatherForecastJSONReader(AbstractSyncWeatherReader):
             df = pd.read_json(text_stream, convert_dates=False)
         self._rename_columns(df)
         self._convert_date_and_time_to_timestamp(df)
-        self._logger.debug(f"Weather is parsed")
+        self._logger.debug("Weather is parsed")
         return df
 
     def _rename_columns(self, df: pd.DataFrame) -> None:
