@@ -24,9 +24,10 @@ jobs:
           python-version: '3.8'
           architecture: 'x64'
       
-      - name: "Prepare proxy"
-        run: |
-          printenv SSH_PROXY_PRIVATE_KEY > ${{env.SSH_PROXY_PRIVATE_KEY_PATH}} 
+      - name: "Save ssh private key to file"
+        run: printenv SSH_PROXY_PRIVATE_KEY > ${{env.SSH_PROXY_PRIVATE_KEY_PATH}} 
+      
+      - name: "Install pproxy"
           python -m venv ${{env.PPROXY_ENV_PATH}}
           ${{env.PPROXY_ENV_PATH}}/Scripts/python.exe -m pip install pproxy 
           ${{env.PPROXY_ENV_PATH}}/Scripts/python.exe -m pip install asyncssh 
