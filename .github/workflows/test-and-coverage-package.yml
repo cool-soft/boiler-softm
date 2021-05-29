@@ -25,13 +25,13 @@ jobs:
       - name: "Run pproxy in background"
         run: | 
           docker run \
-              --rm=true \
-              -d \
-              -p 8080:8080 \
-              --volume ${{env.SSH_PROXY_PRIVATE_KEY_PATH}}:${{env.SSH_PROXY_PRIVATE_KEY_PATH}}
-              mosajjal/pproxy:latest \
-              -l http://${{env.HTTP_PROXY_ADDRESS}} 
-              -r ssh://${{env.SSH_PROXY_ADDRESS}}/#root::${{env.SSH_PROXY_PRIVATE_KEY_PATH}}
+            --rm=true \
+            -d \
+            -p 8080:8080 \
+            --volume ${{env.SSH_PROXY_PRIVATE_KEY_PATH}}:${{env.SSH_PROXY_PRIVATE_KEY_PATH}} \
+            mosajjal/pproxy:latest \
+            -l http://${{env.HTTP_PROXY_ADDRESS}} \
+            -r ssh://${{env.SSH_PROXY_ADDRESS}}/#root::${{env.SSH_PROXY_PRIVATE_KEY_PATH}}
       
       - name: "Install python"
         uses: actions/setup-python@v1
