@@ -55,7 +55,7 @@ def prepare_proxy(is_need_proxy,
             asyncio.set_event_loop_policy(policy)
 
         command = [
-            f"{pproxy_env_path}/Scripts/python",
+            f"{pproxy_env_path}/bin/python",
             "-m", "pproxy",
             "-l", f"http://{http_proxy_address}",
             "-r", f"ssh://{ssh_proxy_address}#{ssh_proxy_user}::{ssh_proxy_private_key_path}",
