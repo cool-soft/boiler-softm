@@ -17,6 +17,8 @@ jobs:
       SSH_PROXY_ADDRESS: ${{secrets.SSH_PROXY_ADDRESS}}
       SSH_PROXY_PRIVATE_KEY: ${{secrets.SSH_PROXY_PRIVATE_KEY}}
       SSH_PROXY_PRIVATE_KEY_PATH: "/tmp/ssh_proxy_private_key"
+      TEST_WITH_PROXY: True
+
     steps:
       
       - name: "Install python"
