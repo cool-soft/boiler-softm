@@ -21,10 +21,21 @@ class TestSoftMWeatherProcessor:
     end_timestamp = start_timestamp + (20 * time_tick)
 
     @pytest.fixture
-    def loader(self):
-        return SoftMAsyncWeatherForecastOnlineLoader(
-            reader=SoftMSyncWeatherForecastJSONReader(weather_data_timezone=self.weather_data_timezone)
-        )
+    def reader(self):
+        return SoftMSyncWeatherForecastJSONReader(weather_data_timezone=gettz("Asia/Yekaterinburg"))
+
+    @pytest.fixture
+    def loader(self, reader, is_need_proxy, http_proxy_address):
+        if is_need_proxy:
+            loader = SoftMAsyncWeatherForecastOnlineLoader(
+                reader=reader,
+                http_proxy=f"http://{http_proxy_address}"
+            )
+        else:
+            loader = SoftMAsyncWeatherForecastOnlineLoader(
+                reader=reader
+            )
+        return loader
 
     @pytest.fixture
     def timestamp_round_algorithm(self):
