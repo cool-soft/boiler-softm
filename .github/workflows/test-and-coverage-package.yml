@@ -30,9 +30,9 @@ jobs:
       - name: "Install pproxy"
         run: |
           python -m venv ${{env.PPROXY_ENV_PATH}}
-          ls ${{env.PPROXY_ENV_PATH}}
-          ${{env.PPROXY_ENV_PATH}}/Scripts/python -m pip install pproxy 
-          ${{env.PPROXY_ENV_PATH}}/Scripts/python -m pip install asyncssh 
+          ls ${{env.PPROXY_ENV_PATH}}/bin
+          ${{env.PPROXY_ENV_PATH}}/bin/python -m pip install pproxy 
+          ${{env.PPROXY_ENV_PATH}}/bin/python -m pip install asyncssh 
       
       - name: "Checkout repository"
         uses: actions/checkout@v2
