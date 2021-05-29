@@ -11,8 +11,6 @@ jobs:
   test-and-coverage-package:
     runs-on: [ubuntu-latest]
     env:
-      PPROXY_ENV_PATH: "/tmp/pproxy_env"
-      PPROXY_PYTHON_PATH: "/tmp/pproxy_env/bin/python"
       HTTP_PROXY_ADDRESS: "127.0.0.1:8080"
       SSH_PROXY_ADDRESS: ${{secrets.SSH_PROXY_ADDRESS}}
       SSH_PROXY_PRIVATE_KEY: ${{secrets.SSH_PROXY_PRIVATE_KEY}}
@@ -21,20 +19,25 @@ jobs:
 
     steps:
       
+      - name: "Save ssh private key to file"
+        run: printenv SSH_PROXY_PRIVATE_KEY > ${{env.SSH_PROXY_PRIVATE_KEY_PATH}} 
+      
+      - name: "Run pproxy in background"
+        run: | 
+          docker run \
+            --rm \
+            -d \
+            -p 8080:8080 \
+            -v ${{env.SSH_PROXY_PRIVATE_KEY_PATH}}:${{env.SSH_PROXY_PRIVATE_KEY_PATH}}
+            mosajjal/pproxy:latest \
+              -l http://${{env.HTTP_PROXY_ADDRESS}} 
+              -r ssh://${{env.SSH_PROXY_ADDRESS}}/#root::${{SSH_PROXY_PRIVATE_KEY_PATH}}
+      
       - name: "Install python"
         uses: actions/setup-python@v1
         with:
           python-version: '3.8'
           architecture: 'x64'
-      
-      - name: "Save ssh private key to file"
-        run: printenv SSH_PROXY_PRIVATE_KEY > ${{env.SSH_PROXY_PRIVATE_KEY_PATH}} 
-      
-      - name: "Install pproxy"
-        run: |
-          python -m venv ${{env.PPROXY_ENV_PATH}}
-          ${{env.PPROXY_PYTHON_PATH}} -m pip install pproxy 
-          ${{env.PPROXY_PYTHON_PATH}} -m pip install asyncssh 
       
       - name: "Checkout repository"
         uses: actions/checkout@v2
