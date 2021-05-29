@@ -12,7 +12,7 @@ jobs:
     runs-on: [ubuntu-latest]
     env:
       PPROXY_ENV_PATH: "/tmp/pproxy_env"
-      HTTP_PROXY_ADDRESS: "localhost:8080"
+      HTTP_PROXY_ADDRESS: "127.0.0.1:8080"
       SSH_PROXY_ADDRESS: ${{secrets.SSH_PROXY_ADDRESS}}
       SSH_PROXY_PRIVATE_KEY: ${{secrets.SSH_PROXY_PRIVATE_KEY}}
       SSH_PROXY_PRIVATE_KEY_PATH: "/tmp/ssh_proxy_private_key"
