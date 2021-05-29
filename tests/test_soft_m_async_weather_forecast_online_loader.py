@@ -16,10 +16,17 @@ class TestSoftMAsyncWeatherForecastOnlineLoader:
         return SoftMSyncWeatherForecastJSONReader(weather_data_timezone=gettz("Asia/Yekaterinburg"))
 
     @pytest.fixture
-    def loader(self, reader):
-        return SoftMAsyncWeatherForecastOnlineLoader(
-            reader=reader
-        )
+    def loader(self, reader, is_need_proxy, http_proxy_address):
+        if is_need_proxy:
+            loader = SoftMAsyncWeatherForecastOnlineLoader(
+                reader=reader,
+                http_proxy=f"http://{http_proxy_address}"
+            )
+        else:
+            loader = SoftMAsyncWeatherForecastOnlineLoader(
+                reader=reader
+            )
+        return loader
 
     @pytest.mark.asyncio
     async def test_soft_m_async_weather_forecast_online_loader(self, loader):

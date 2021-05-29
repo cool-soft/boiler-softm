@@ -15,12 +15,14 @@ class SoftMAsyncTempGraphOnlineLoader(AbstractAsyncTempGraphLoader):
     def __init__(self,
                  reader: AbstractSyncTempGraphReader,
                  server_address: str = "https://lysva.agt.town/",
+                 http_proxy: Optional[str] = None,
                  sync_executor: Optional[ThreadPoolExecutor] = None
                  ) -> None:
         self._logger = logging.getLogger(self.__class__.__name__)
 
         self._temp_graph_reader = reader
         self._temp_graph_server_address = server_address
+        self._http_proxy = http_proxy
         self._sync_executor = sync_executor
 
     async def load_temp_graph(self) -> pd.DataFrame:
@@ -34,7 +36,7 @@ class SoftMAsyncTempGraphOnlineLoader(AbstractAsyncTempGraphLoader):
         params = {
             "method": "getTempGraphic"
         }
-        async with aiohttp.request("GET", url=url, params=params) as response:
+        async with aiohttp.request("GET", url=url, params=params, proxy=self._http_proxy) as response:
             raw_response = await response.read()
             self._logger.debug(f"Temp graph is loaded from server. "
                                f"Response status code is {response.status}")

@@ -19,6 +19,7 @@ class SoftMAsyncWeatherForecastOnlineLoader(AbstractAsyncWeatherLoader):
                  timestamp_filter_algorithm: AbstractTimestampFilterAlgorithm =
                  LeftClosedTimestampFilterAlgorithm(),
                  server_address: str = "https://lysva.agt.town/",
+                 http_proxy: Optional[str] = None,
                  sync_executor: ThreadPoolExecutor = None
                  ) -> None:
         self._logger = logging.getLogger(self.__class__.__name__)
@@ -26,6 +27,7 @@ class SoftMAsyncWeatherForecastOnlineLoader(AbstractAsyncWeatherLoader):
         self._weather_reader = reader
         self._weather_data_server_address = server_address
         self._timestamp_filter_algorithm = timestamp_filter_algorithm
+        self._http_proxy = http_proxy
         self._sync_executor = sync_executor
 
     async def load_weather(self,
@@ -45,7 +47,7 @@ class SoftMAsyncWeatherForecastOnlineLoader(AbstractAsyncWeatherLoader):
         params = {
             "method": "getPrognozT"
         }
-        async with aiohttp.request("GET", url, params=params) as response:
+        async with aiohttp.request("GET", url, params=params, proxy=self._http_proxy) as response:
             raw_response = await response.read()
             self._logger.debug(f"Weather forecast is loaded. "
                                f"Response status code is {response.status}")

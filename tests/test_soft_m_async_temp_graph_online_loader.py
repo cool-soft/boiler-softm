@@ -14,10 +14,17 @@ class TestSoftMAsyncTempGraphOnlineLoader:
         return SoftMSyncTempGraphJSONReader()
 
     @pytest.fixture
-    def loader(self, reader):
-        return SoftMAsyncTempGraphOnlineLoader(
-            reader=reader
-        )
+    def loader(self, reader, is_need_proxy, http_proxy_address):
+        if is_need_proxy:
+            loader = SoftMAsyncTempGraphOnlineLoader(
+                reader=reader,
+                http_proxy=f"http://{http_proxy_address}"
+            )
+        else:
+            loader = SoftMAsyncTempGraphOnlineLoader(
+                reader=reader
+            )
+        return loader
 
     @pytest.mark.asyncio
     async def test_soft_m_async_temp_graph_online_loader(self, loader):
