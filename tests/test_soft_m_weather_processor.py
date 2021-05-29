@@ -29,7 +29,7 @@ class TestSoftMWeatherProcessor:
         if is_need_proxy:
             loader = SoftMAsyncWeatherForecastOnlineLoader(
                 reader=reader,
-                http_proxy=f"http://{http_proxy_address}"
+                http_proxy=http_proxy_address
             )
         else:
             loader = SoftMAsyncWeatherForecastOnlineLoader(

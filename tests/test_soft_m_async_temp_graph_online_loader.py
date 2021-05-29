@@ -18,7 +18,7 @@ class TestSoftMAsyncTempGraphOnlineLoader:
         if is_need_proxy:
             loader = SoftMAsyncTempGraphOnlineLoader(
                 reader=reader,
-                http_proxy=f"http://{http_proxy_address}"
+                http_proxy=http_proxy_address
             )
         else:
             loader = SoftMAsyncTempGraphOnlineLoader(

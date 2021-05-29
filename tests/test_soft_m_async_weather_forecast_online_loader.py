@@ -1,8 +1,8 @@
 import pytest
 from boiler.constants import column_names
 # noinspection PyProtectedMember
-from dateutil.tz import gettz
 from pandas.api.types import is_numeric_dtype, is_datetime64tz_dtype
+from dateutil.tz import gettz
 
 from boiler_softm.weather.io.soft_m_async_weather_forecast_online_loader import \
     SoftMAsyncWeatherForecastOnlineLoader
@@ -20,7 +20,7 @@ class TestSoftMAsyncWeatherForecastOnlineLoader:
         if is_need_proxy:
             loader = SoftMAsyncWeatherForecastOnlineLoader(
                 reader=reader,
-                http_proxy=f"http://{http_proxy_address}"
+                http_proxy=http_proxy_address
             )
         else:
             loader = SoftMAsyncWeatherForecastOnlineLoader(
