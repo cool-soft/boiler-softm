@@ -30,7 +30,7 @@ jobs:
             -p 8080:8080 \
             --volume /tmp:/tmp \
             mosajjal/pproxy:latest \
-            -l http://0.0.0.0:8080 \
+            -l http://:8080 \
             -r ssh://${{env.SSH_PROXY_ADDRESS}}/#root::/tmp/id_rsa
       
       - name: "Install python"
