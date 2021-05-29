@@ -31,7 +31,7 @@ jobs:
           --volume ${{env.SSH_PROXY_PRIVATE_KEY_PATH}}:${{env.SSH_PROXY_PRIVATE_KEY_PATH}}
           mosajjal/pproxy:latest \
           -l http://${{env.HTTP_PROXY_ADDRESS}} 
-          -r ssh://${{env.SSH_PROXY_ADDRESS}}/#root::${{SSH_PROXY_PRIVATE_KEY_PATH}}
+          -r ssh://${{env.SSH_PROXY_ADDRESS}}/#root::${{env.SSH_PROXY_PRIVATE_KEY_PATH}}
       
       - name: "Install python"
         uses: actions/setup-python@v1
