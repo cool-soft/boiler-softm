@@ -13,7 +13,7 @@ jobs:
     env:
       HTTP_PROXY_ADDRESS: "localhost:8080"
       SSH_PROXY_ADDRESS: ${{secrets.SSH_PROXY_ADDRESS}}
-      SSH_PROXY_PRIVATE_KEY_PATH: "/tmp/id_rsa"
+      SSH_PROXY_PRIVATE_KEY_PATH: "/tmp/ssh_proxy_private_key"
       PPROXY_ENV_PATH: "/tmp/pproxy_env"
     steps:
       
@@ -25,7 +25,7 @@ jobs:
       
       - name: "Prepare proxy"
         run: |
-          echo ${{secrets.SSH_PROXY_PRIVATE_KEY}} >> ${{env.SSH_PROXY_PRIVATE_KEY_PATH}} 
+          cat <<< ${{secrets.SSH_PROXY_PRIVATE_KEY}} > ${{env.SSH_PROXY_PRIVATE_KEY_PATH}} 
           python -m venv ${{env.PPROXY_ENV_PATH}}
           ${{env.PPROXY_ENV_PATH}}/Scripts/python.exe -m pip install pproxy 
           ${{env.PPROXY_ENV_PATH}}/Scripts/python.exe -m pip install asyncssh 
