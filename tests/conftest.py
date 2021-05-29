@@ -18,7 +18,9 @@ def ssh_proxy_address():
 
 @pytest.fixture(scope="session")
 def http_proxy_address():
-    return os.getenv("HTTP_PROXY_ADDRESS")
+    http_proxy_host = os.getenv("HTTP_PROXY_HOSTNAME")
+    http_proxy_port = os.getenv("HTTP_PROXY_PORT")
+    return f"{http_proxy_host}:{http_proxy_port}"
 
 
 @pytest.fixture(scope="session")

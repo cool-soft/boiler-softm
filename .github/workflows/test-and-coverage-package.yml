@@ -11,10 +11,11 @@ jobs:
   test-and-coverage-package:
     runs-on: [ubuntu-latest]
     env:
-      HTTP_PROXY_ADDRESS: "localhost:8080"
+      HTTP_PROXY_HOSTNAME: "localhost"
+      HTTP_PROXY_PORT: 8080
       SSH_PROXY_ADDRESS: ${{secrets.SSH_PROXY_ADDRESS}}
       SSH_PROXY_PRIVATE_KEY: ${{secrets.SSH_PROXY_PRIVATE_KEY}}
-      SSH_PROXY_PRIVATE_KEY_PATH: "/tmp/ssh_proxy_private_key"
+      SSH_PROXY_PRIVATE_KEY_PATH: "/tmp/id_rsa"
       TEST_WITH_PROXY: True
 
     steps:
@@ -27,10 +28,10 @@ jobs:
           docker run \
             --rm=true \
             -d \
-            -p 8080:8080 \
+            -p ${{env.HTTP_PROXY_PORT}}:${{env.HTTP_PROXY_PORT}} \
             --volume /tmp:/tmp \
             mosajjal/pproxy:latest \
-            -l http://:8080 \
+            -l http://:${{env.HTTP_PROXY_PORT}} \
             -r ssh://${{env.SSH_PROXY_ADDRESS}}/#root::/tmp/id_rsa
       
       - name: "Install python"
