@@ -28,6 +28,7 @@ jobs:
         run: printenv SSH_PROXY_PRIVATE_KEY > ${{env.SSH_PROXY_PRIVATE_KEY_PATH}} 
       
       - name: "Install pproxy"
+        run: |
           python -m venv ${{env.PPROXY_ENV_PATH}}
           ${{env.PPROXY_ENV_PATH}}/Scripts/python.exe -m pip install pproxy 
           ${{env.PPROXY_ENV_PATH}}/Scripts/python.exe -m pip install asyncssh 
