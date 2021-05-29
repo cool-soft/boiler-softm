@@ -12,6 +12,7 @@ jobs:
     runs-on: [ubuntu-latest]
     env:
       PPROXY_ENV_PATH: "/tmp/pproxy_env"
+      PPROXY_PYTHON_PATH: "/tmp/pproxy_env/bin/python"
       HTTP_PROXY_ADDRESS: "127.0.0.1:8080"
       SSH_PROXY_ADDRESS: ${{secrets.SSH_PROXY_ADDRESS}}
       SSH_PROXY_PRIVATE_KEY: ${{secrets.SSH_PROXY_PRIVATE_KEY}}
@@ -30,9 +31,8 @@ jobs:
       - name: "Install pproxy"
         run: |
           python -m venv ${{env.PPROXY_ENV_PATH}}
-          ls ${{env.PPROXY_ENV_PATH}}/bin
-          ${{env.PPROXY_ENV_PATH}}/bin/python -m pip install pproxy 
-          ${{env.PPROXY_ENV_PATH}}/bin/python -m pip install asyncssh 
+          ${{env.PPROXY_PYTHON_PATH}} -m pip install pproxy 
+          ${{env.PPROXY_PYTHON_PATH}} -m pip install asyncssh 
       
       - name: "Checkout repository"
         uses: actions/checkout@v2
@@ -53,6 +53,7 @@ jobs:
           fail_ci_if_error: true
 
       - name: "Generate code coverage xml report"
+        if: ${{!cancelled()}}
         run: coverage xml
 
       - name: "Run codacy-coverage-reporter"
@@ -63,6 +64,7 @@ jobs:
           coverage-reports: coverage-report.xml
 
       - name: "Generate code coverage html report"
+        if: ${{!cancelled()}}
         run: coverage html
 
       - name: "Archive code coverage results"

@@ -1,5 +1,3 @@
-import asyncio
-import sys
 import os
 import subprocess
 
@@ -9,7 +7,8 @@ import pytest
 @pytest.fixture(scope="session")
 def is_need_proxy():
     need_proxy = False
-    if os.getenv("GITHUB_ACTIONS") is not None:
+    if os.getenv("GITHUB_ACTIONS") is not None or \
+            os.getenv("NEED_PROXY") is not None:
         need_proxy = True
     return need_proxy
 
@@ -30,8 +29,8 @@ def ssh_proxy_private_key_path():
 
 
 @pytest.fixture(scope="session")
-def pproxy_env_path():
-    return os.getenv("PPROXY_ENV_PATH")
+def pproxy_python_path():
+    return os.getenv("PPROXY_PYTHON_PATH")
 
 
 @pytest.fixture(scope="session")
@@ -41,21 +40,15 @@ def ssh_proxy_user():
 
 @pytest.fixture(scope="session", autouse=True)
 def prepare_proxy(is_need_proxy,
-                  pproxy_env_path,
+                  pproxy_python_path,
                   http_proxy_address,
                   ssh_proxy_address,
                   ssh_proxy_user,
                   ssh_proxy_private_key_path,
                   request):
     if is_need_proxy:
-        if sys.version_info[0] == 3 and \
-                sys.version_info[1] >= 8 and \
-                sys.platform.startswith('win'):
-            policy = asyncio.WindowsSelectorEventLoopPolicy()
-            asyncio.set_event_loop_policy(policy)
-
         command = [
-            f"{pproxy_env_path}/bin/python",
+            f"{pproxy_python_path}",
             "-m", "pproxy",
             "-l", f"http://{http_proxy_address}",
             "-r", f"ssh://{ssh_proxy_address}#{ssh_proxy_user}::{ssh_proxy_private_key_path}",
