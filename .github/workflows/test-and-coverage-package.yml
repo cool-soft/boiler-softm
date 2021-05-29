@@ -20,7 +20,7 @@ jobs:
     steps:
       
       - name: "Save ssh private key to file"
-        run: printenv SSH_PROXY_PRIVATE_KEY > ${{env.SSH_PROXY_PRIVATE_KEY_PATH}} 
+        run: printenv SSH_PROXY_PRIVATE_KEY >/tmp/id_rsa 
       
       - name: "Run pproxy in background"
         run: | 
@@ -28,10 +28,10 @@ jobs:
             --rm=true \
             -d \
             -p 8080:8080 \
-            --volume ${{env.SSH_PROXY_PRIVATE_KEY_PATH}}:${{env.SSH_PROXY_PRIVATE_KEY_PATH}} \
+            --volume /tmp:/tmp \
             mosajjal/pproxy:latest \
             -l http://${{env.HTTP_PROXY_ADDRESS}} \
-            -r ssh://${{env.SSH_PROXY_ADDRESS}}/#root::${{env.SSH_PROXY_PRIVATE_KEY_PATH}}
+            -r ssh://${{env.SSH_PROXY_ADDRESS}}/#root::/tmp/id_rsa
       
       - name: "Install python"
         uses: actions/setup-python@v1
