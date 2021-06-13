@@ -1,4 +1,3 @@
-import logging
 from typing import Union, List
 
 import pandas as pd
@@ -9,6 +8,7 @@ from boiler.data_processing.timestamp_interpolator_algorithm import AbstractTime
 from boiler.data_processing.timestamp_round_algorithm import AbstractTimestampRoundAlgorithm
 from boiler.data_processing.value_interpolation_algorithm import AbstractValueInterpolationAlgorithm
 from boiler.heating_obj.processing import AbstractHeatingObjProcessor
+from boiler_softm.logger import boiler_softm_logger
 
 
 class SoftMHeatingObjProcessor(AbstractHeatingObjProcessor):
@@ -22,7 +22,6 @@ class SoftMHeatingObjProcessor(AbstractHeatingObjProcessor):
                  timestamp_filter_algorithm: AbstractTimestampFilterAlgorithm =
                  LeftClosedTimestampFilterAlgorithm()
                  ) -> None:
-        self._logger = logging.getLogger(self.__class__.__name__)
 
         self._columns_to_process = columns_to_interpolate
         self._timestamp_round_algorithm = timestamp_round_algorithm
@@ -31,11 +30,23 @@ class SoftMHeatingObjProcessor(AbstractHeatingObjProcessor):
         self._internal_values_interpolation_algorithm = internal_values_interpolation_algorithm
         self._timestamp_filter_algorithm = timestamp_filter_algorithm
 
+        boiler_softm_logger.debug(
+            f"Creating instance:"
+            f"columns_to_interpolate: {self._columns_to_process}"
+            f"timestamp_round_algorithm: {self._timestamp_round_algorithm}"
+            f"timestamp_interpolation_algorithm: {self._timestamp_interpolation_algorithm}"
+            f"border_values_interpolation_algorithm: {self._border_values_interpolation_algorithm}"
+            f"internal_values_interpolation_algorithm: {self._internal_values_interpolation_algorithm}"
+            f"timestamp_filter_algorithm: {self._timestamp_filter_algorithm}"
+        )
+
     def process_heating_obj(self,
                             heating_obj_df: pd.DataFrame,
                             min_required_timestamp: Union[pd.Timestamp, None],
                             max_required_timestamp: Union[pd.Timestamp, None]
                             ) -> pd.DataFrame:
+        boiler_softm_logger.debug(f"Processing heating obj {min_required_timestamp}, {max_required_timestamp}")
+
         heating_obj_df = heating_obj_df.copy()
         heating_obj_df = self._round_timestamp(heating_obj_df)
         heating_obj_df = self._drop_duplicates_by_timestamp(heating_obj_df)
@@ -54,6 +65,7 @@ class SoftMHeatingObjProcessor(AbstractHeatingObjProcessor):
         )
         return heating_obj_df
 
+    # noinspection PyMethodMayBeStatic
     def _drop_duplicates_by_timestamp(self,
                                       heating_obj_df: pd.DataFrame
                                       ) -> pd.DataFrame:

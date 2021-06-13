@@ -1,4 +1,3 @@
-import logging
 from typing import Union
 
 import pandas as pd
@@ -8,6 +7,7 @@ from boiler.data_processing.timestamp_interpolator_algorithm import AbstractTime
 from boiler.data_processing.timestamp_round_algorithm import AbstractTimestampRoundAlgorithm
 from boiler.data_processing.value_interpolation_algorithm import AbstractValueInterpolationAlgorithm
 from boiler.weather.processing import AbstractWeatherProcessor
+from boiler_softm.logger import boiler_softm_logger
 
 
 class SoftMWeatherProcessor(AbstractWeatherProcessor):
@@ -19,7 +19,6 @@ class SoftMWeatherProcessor(AbstractWeatherProcessor):
                  border_values_interpolation_algorithm: AbstractValueInterpolationAlgorithm,
                  internal_values_interpolation_algorithm: AbstractValueInterpolationAlgorithm
                  ) -> None:
-        self._logger = logging.getLogger(self.__class__.__name__)
 
         self._columns_to_interpolate = [column_names.WEATHER_TEMP]
         self._timestamp_round_algorithm = timestamp_round_algorithm
@@ -28,11 +27,23 @@ class SoftMWeatherProcessor(AbstractWeatherProcessor):
         self._border_values_interpolation_algorithm = border_values_interpolation_algorithm
         self._internal_values_interpolation_algorithm = internal_values_interpolation_algorithm
 
+        boiler_softm_logger.debug(
+            f"Creating instance:"
+            f"columns_to_interpolate: {self._columns_to_interpolate}"
+            f"timestamp_round_algorithm: {self._timestamp_round_algorithm}"
+            f"timestamp_interpolation_algorithm: {self._timestamp_interpolation_algorithm}"
+            f"timestamp_filter_algorithm: {self._timestamp_filter_algorithm}"
+            f"border_values_interpolation_algorithm: {self._border_values_interpolation_algorithm}"
+            f"internal_values_interpolation_algorithm: {self._internal_values_interpolation_algorithm}"
+        )
+
     def process_weather_df(self,
                            weather_df: pd.DataFrame,
                            min_required_timestamp: Union[pd.Timestamp, None],
                            max_required_timestamp: Union[pd.Timestamp, None]
                            ) -> pd.DataFrame:
+        boiler_softm_logger.debug(f"Processing weather df {min_required_timestamp}, {max_required_timestamp}")
+
         weather_df = weather_df.copy()
         weather_df = self._round_timestamp(weather_df)
         weather_df = self._drop_duplicates_by_timestamp(weather_df)
