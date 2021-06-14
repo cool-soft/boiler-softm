@@ -4,7 +4,7 @@ import pandas as pd
 from boiler.constants import column_names
 from boiler.data_processing.other import parse_datetime
 from boiler.heating_obj.io.abstract_sync_heating_obj_reader import AbstractSyncHeatingObjReader
-from boiler_softm.logger import boiler_softm_logger
+from boiler_softm.logger import logger
 
 from boiler_softm.constants import circuit_ids_equal as soft_m_circuit_ids_equal
 from boiler_softm.constants import column_names as soft_m_column_names
@@ -33,7 +33,7 @@ class SoftMSyncHeatingObjCSVReader(AbstractSyncHeatingObjReader):
         self._circuit_id_equals = soft_m_circuit_ids_equal.CIRCUIT_ID_EQUALS
         self._column_names_equals = processing_parameters.HEATING_OBJ_COLUMN_NAMES_EQUALS
 
-        boiler_softm_logger.debug(
+        logger.debug(
             f"Creating instance:"
             f"encoding: {self._encoding}"
             f"timestamp_timezone: {self._timestamp_timezone}"
@@ -47,7 +47,7 @@ class SoftMSyncHeatingObjCSVReader(AbstractSyncHeatingObjReader):
     def read_heating_obj_from_binary_stream(self,
                                             binary_stream: BinaryIO
                                             ) -> pd.DataFrame:
-        boiler_softm_logger.debug("Loading heating obj data")
+        logger.debug("Loading heating obj data")
 
         df = pd.read_csv(
             binary_stream,
@@ -57,7 +57,7 @@ class SoftMSyncHeatingObjCSVReader(AbstractSyncHeatingObjReader):
             encoding=self._encoding
         )
 
-        boiler_softm_logger.debug("Parsing heating obj data")
+        logger.debug("Parsing heating obj data")
         df = self._exclude_unused_circuits(df)
         df = self._rename_equal_columns(df)
         df = self._parse_timestamp(df)
@@ -68,14 +68,14 @@ class SoftMSyncHeatingObjCSVReader(AbstractSyncHeatingObjReader):
         return df
 
     def _exclude_unused_circuits(self, df: pd.DataFrame) -> pd.DataFrame:
-        boiler_softm_logger.debug("Excluding unused circuits")
+        logger.debug("Excluding unused circuits")
         renamed_circuits = \
             df[soft_m_column_names.HEATING_SYSTEM_CIRCUIT_ID].apply(str).replace(self._circuit_id_equals)
         df = df[renamed_circuits == self._need_circuit].copy()
         return df
 
     def _rename_equal_columns(self, df: pd.DataFrame) -> pd.DataFrame:
-        boiler_softm_logger.debug("Renaming equal columns")
+        logger.debug("Renaming equal columns")
         df = df.copy()
         column_names_equals = {}
         for soft_m_column_name, target_column_name in self._column_names_equals.items():
@@ -85,7 +85,7 @@ class SoftMSyncHeatingObjCSVReader(AbstractSyncHeatingObjReader):
         return df
 
     def _parse_timestamp(self, df: pd.DataFrame) -> pd.DataFrame:
-        boiler_softm_logger.debug("Parsing datetime")
+        logger.debug("Parsing datetime")
         df = df.copy()
         df[column_names.TIMESTAMP] = df[column_names.TIMESTAMP].apply(
             parse_datetime, args=(self._timestamp_parse_patterns, self._timestamp_timezone)
@@ -93,7 +93,7 @@ class SoftMSyncHeatingObjCSVReader(AbstractSyncHeatingObjReader):
         return df
 
     def _convert_values_to_float(self, df: pd.DataFrame) -> pd.DataFrame:
-        boiler_softm_logger.debug("Converting values to float")
+        logger.debug("Converting values to float")
         df = df.copy()
         for column_name in self._float_columns:
             df[column_name] = df[column_name].str.replace(",", ".", regex=False)
@@ -101,7 +101,7 @@ class SoftMSyncHeatingObjCSVReader(AbstractSyncHeatingObjReader):
         return df
 
     def _divide_incorrect_hot_water_temp(self, df: pd.DataFrame) -> pd.DataFrame:
-        boiler_softm_logger.debug("Dividing incorrect water temp")
+        logger.debug("Dividing incorrect water temp")
         df = df.copy()
         for column_name in self._water_temp_columns:
             df[column_name] = df[column_name].apply(
@@ -110,6 +110,6 @@ class SoftMSyncHeatingObjCSVReader(AbstractSyncHeatingObjReader):
         return df
 
     def _exclude_unused_columns(self, df: pd.DataFrame) -> pd.DataFrame:
-        boiler_softm_logger.debug("Excluding unused columns")
+        logger.debug("Excluding unused columns")
         df = df[self._need_columns].copy()
         return df

@@ -1,3 +1,4 @@
 import logging
 
-boiler_softm_logger = logging.getLogger("boiler-softm")
+LOGGER_NAME = "boiler-softm"
+logger = logging.getLogger(LOGGER_NAME)

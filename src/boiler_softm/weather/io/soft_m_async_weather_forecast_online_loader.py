@@ -9,7 +9,7 @@ from boiler.data_processing.beetween_filter_algorithm \
     import AbstractTimestampFilterAlgorithm, LeftClosedTimestampFilterAlgorithm
 from boiler.weather.io.abstract_async_weather_loader import AbstractAsyncWeatherLoader
 from boiler.weather.io.abstract_sync_weather_reader import AbstractSyncWeatherReader
-from boiler_softm.logger import boiler_softm_logger
+from boiler_softm.logger import logger
 
 
 class SoftMAsyncWeatherForecastOnlineLoader(AbstractAsyncWeatherLoader):
@@ -28,7 +28,7 @@ class SoftMAsyncWeatherForecastOnlineLoader(AbstractAsyncWeatherLoader):
         self._http_proxy = http_proxy
         self._sync_executor = sync_executor
 
-        boiler_softm_logger.debug(
+        logger.debug(
             f"Creating instance:"
             f"reader: {self._weather_reader}"
             f"server_address: {self._weather_data_server_address}"
@@ -41,11 +41,11 @@ class SoftMAsyncWeatherForecastOnlineLoader(AbstractAsyncWeatherLoader):
                            start_datetime: Optional[pd.Timestamp] = None,
                            end_datetime: Optional[pd.Timestamp] = None
                            ) -> pd.DataFrame:
-        boiler_softm_logger.debug(f"Requested weather forecast from {start_datetime} to {end_datetime}")
+        logger.debug(f"Requested weather forecast from {start_datetime} to {end_datetime}")
         raw_weather_forecast = await self._get_forecast_from_server()
         weather_df = await self._read_weather_forecast(raw_weather_forecast)
         weather_df = self._filter_by_timestamp(end_datetime, start_datetime, weather_df)
-        boiler_softm_logger.debug(f"Gathered {len(weather_df)} weather forecast items")
+        logger.debug(f"Gathered {len(weather_df)} weather forecast items")
         return weather_df
 
     async def _get_forecast_from_server(self) -> bytes:
@@ -56,7 +56,7 @@ class SoftMAsyncWeatherForecastOnlineLoader(AbstractAsyncWeatherLoader):
         }
         async with aiohttp.request("GET", url=url, params=params, proxy=self._http_proxy) as response:
             raw_response = await response.read()
-            boiler_softm_logger.debug(
+            logger.debug(
                 f"Weather forecast is loaded. "
                 f"Response status code is {response.status}"
             )

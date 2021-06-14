@@ -2,7 +2,7 @@ from typing import BinaryIO
 
 import pandas as pd
 from boiler.temp_graph.io.abstract_sync_temp_graph_reader import AbstractSyncTempGraphReader
-from boiler_softm.logger import boiler_softm_logger
+from boiler_softm.logger import logger
 
 from boiler_softm.constants import processing_parameters
 
@@ -15,7 +15,7 @@ class SoftMSyncTempGraphJSONReader(AbstractSyncTempGraphReader):
         self._encoding = encoding
         self._column_names_equal = processing_parameters.TEMP_GRAPH_COLUMN_NAMES_EQUALS
 
-        boiler_softm_logger.debug(
+        logger.debug(
             f"Creating instance:"
             f"encoding: {encoding}"
         )
@@ -23,15 +23,15 @@ class SoftMSyncTempGraphJSONReader(AbstractSyncTempGraphReader):
     def read_temp_graph_from_binary_stream(self,
                                            binary_stream: BinaryIO
                                            ) -> pd.DataFrame:
-        boiler_softm_logger.debug("Reading temp graph")
+        logger.debug("Reading temp graph")
         df = pd.read_json(binary_stream, encoding=self._encoding)
         df = self._rename_columns(df)
-        boiler_softm_logger.debug("Temp graph is read")
+        logger.debug("Temp graph is read")
         return df
 
     def _rename_columns(self,
                         df: pd.DataFrame
                         ) -> pd.DataFrame:
-        boiler_softm_logger.debug("Renaming columns")
+        logger.debug("Renaming columns")
         df = df.rename(columns=self._column_names_equal).copy()
         return df

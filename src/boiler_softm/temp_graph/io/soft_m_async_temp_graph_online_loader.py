@@ -7,7 +7,7 @@ import aiohttp
 import pandas as pd
 from boiler.temp_graph.io.abstract_async_temp_graph_loader import AbstractAsyncTempGraphLoader
 from boiler.temp_graph.io.abstract_sync_temp_graph_reader import AbstractSyncTempGraphReader
-from boiler_softm.logger import boiler_softm_logger
+from boiler_softm.logger import logger
 
 
 class SoftMAsyncTempGraphOnlineLoader(AbstractAsyncTempGraphLoader):
@@ -23,7 +23,7 @@ class SoftMAsyncTempGraphOnlineLoader(AbstractAsyncTempGraphLoader):
         self._http_proxy = http_proxy
         self._sync_executor = sync_executor
 
-        boiler_softm_logger.debug(
+        logger.debug(
             f"Creating instance:"
             f"reader: {self._temp_graph_reader}"
             f"server_address: {self._temp_graph_server_address}"
@@ -32,7 +32,7 @@ class SoftMAsyncTempGraphOnlineLoader(AbstractAsyncTempGraphLoader):
         )
 
     async def load_temp_graph(self) -> pd.DataFrame:
-        boiler_softm_logger.debug("Loading temp graph")
+        logger.debug("Loading temp graph")
         temp_graph_as_bytes = await self._get_temp_graph_from_server()
         temp_graph_df = await self._read_temp_graph(temp_graph_as_bytes)
         return temp_graph_df
@@ -44,7 +44,7 @@ class SoftMAsyncTempGraphOnlineLoader(AbstractAsyncTempGraphLoader):
         }
         async with aiohttp.request("GET", url=url, params=params, proxy=self._http_proxy) as response:
             raw_response = await response.read()
-            boiler_softm_logger.debug(f"Temp graph is loaded from server. "
+            logger.debug(f"Temp graph is loaded from server. "
                                       f"Response status code is {response.status}")
 
         return raw_response

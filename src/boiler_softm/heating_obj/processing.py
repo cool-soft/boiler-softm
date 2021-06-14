@@ -8,7 +8,7 @@ from boiler.data_processing.timestamp_interpolator_algorithm import AbstractTime
 from boiler.data_processing.timestamp_round_algorithm import AbstractTimestampRoundAlgorithm
 from boiler.data_processing.value_interpolation_algorithm import AbstractValueInterpolationAlgorithm
 from boiler.heating_obj.processing import AbstractHeatingObjProcessor
-from boiler_softm.logger import boiler_softm_logger
+from boiler_softm.logger import logger
 
 
 class SoftMHeatingObjProcessor(AbstractHeatingObjProcessor):
@@ -30,7 +30,7 @@ class SoftMHeatingObjProcessor(AbstractHeatingObjProcessor):
         self._internal_values_interpolation_algorithm = internal_values_interpolation_algorithm
         self._timestamp_filter_algorithm = timestamp_filter_algorithm
 
-        boiler_softm_logger.debug(
+        logger.debug(
             f"Creating instance:"
             f"columns_to_interpolate: {self._columns_to_process}"
             f"timestamp_round_algorithm: {self._timestamp_round_algorithm}"
@@ -45,7 +45,7 @@ class SoftMHeatingObjProcessor(AbstractHeatingObjProcessor):
                             min_required_timestamp: Union[pd.Timestamp, None],
                             max_required_timestamp: Union[pd.Timestamp, None]
                             ) -> pd.DataFrame:
-        boiler_softm_logger.debug(f"Processing heating obj {min_required_timestamp}, {max_required_timestamp}")
+        logger.debug(f"Processing heating obj {min_required_timestamp}, {max_required_timestamp}")
 
         heating_obj_df = heating_obj_df.copy()
         heating_obj_df = self._round_timestamp(heating_obj_df)
