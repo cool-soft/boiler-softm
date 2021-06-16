@@ -29,12 +29,12 @@ class SoftMAsyncWeatherForecastOnlineLoader(AbstractAsyncWeatherLoader):
         self._sync_executor = sync_executor
 
         logger.debug(
-            f"Creating instance:"
-            f"reader: {self._weather_reader}"
-            f"server_address: {self._weather_data_server_address}"
-            f"timestamp_filter_algorithm: {self._timestamp_filter_algorithm}"
-            f"http_proxy: {self._http_proxy}"
-            f"sync_executor: {self._sync_executor}"
+            f"Creating instance: "
+            f"reader: {self._weather_reader} "
+            f"server_address: {self._weather_data_server_address} "
+            f"timestamp_filter_algorithm: {self._timestamp_filter_algorithm} "
+            f"http_proxy: {self._http_proxy} "
+            f"sync_executor: {self._sync_executor} "
         )
 
     async def load_weather(self,

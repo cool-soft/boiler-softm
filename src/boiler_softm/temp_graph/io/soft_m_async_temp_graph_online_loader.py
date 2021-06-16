@@ -24,11 +24,11 @@ class SoftMAsyncTempGraphOnlineLoader(AbstractAsyncTempGraphLoader):
         self._sync_executor = sync_executor
 
         logger.debug(
-            f"Creating instance:"
-            f"reader: {self._temp_graph_reader}"
-            f"server_address: {self._temp_graph_server_address}"
-            f"http_proxy: {self._http_proxy}"
-            f"sync_executor: {self._sync_executor}"
+            f"Creating instance: "
+            f"reader: {self._temp_graph_reader} "
+            f"server_address: {self._temp_graph_server_address} "
+            f"http_proxy: {self._http_proxy} "
+            f"sync_executor: {self._sync_executor} "
         )
 
     async def load_temp_graph(self) -> pd.DataFrame:
