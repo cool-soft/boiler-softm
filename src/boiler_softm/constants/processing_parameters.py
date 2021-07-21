@@ -32,6 +32,7 @@ APARTMENT_HOUSE_AVAILABLE_COLUMNS = [
 
 HEATING_OBJ_TIMESTAMP_PARSING_PATTERNS = (
     r"(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})\s(?P<hours>\d{2}):(?P<minutes>\d{2}).{7}",
+    r"(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})\s(?P<hours>\d{2}):(?P<minutes>\d{2}):(?P<seconds>\d{2})",
     r"(?P<day>\d{2})\.(?P<month>\d{2})\.(?P<year>\d{4})\s(?P<hours>\d{1,2}):(?P<minutes>\d{2})",
     r"(?P<month>\d{2})/(?P<day>\d{2})/(?P<year>\d{4})\s(?P<hours>\d{1,2}):(?P<minutes>\d{2}):(?P<seconds>\d{2})"
 )
