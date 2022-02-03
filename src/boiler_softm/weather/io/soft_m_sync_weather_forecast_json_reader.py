@@ -33,7 +33,8 @@ class SoftMSyncWeatherForecastJSONReader(AbstractSyncWeatherReader):
         with io.TextIOWrapper(binary_stream, encoding=self._encoding) as text_stream:
             df = pd.read_json(text_stream, convert_dates=False)
         self._rename_columns(df)
-        self._convert_date_and_time_to_timestamp(df)
+        # self._convert_date_and_time_to_timestamp(df)
+        self._convert_datetime_to_timestamp(df)
         logger.debug("Weather is parsed")
         return df
 
@@ -53,3 +54,12 @@ class SoftMSyncWeatherForecastJSONReader(AbstractSyncWeatherReader):
         df[column_names.TIMESTAMP] = timestamp
         del df[soft_m_column_names.WEATHER_TIME]
         del df[soft_m_column_names.WEATHER_DATE]
+
+    def _convert_datetime_to_timestamp(self, df: pd.DataFrame) -> None:
+        logger.debug("Converting dates and time to timestamp")
+
+        datetime_as_str = df[column_names.TIMESTAMP]
+        timestamp = pd.to_datetime(datetime_as_str)
+        timestamp = timestamp.dt.tz_convert(self._weather_data_timezone)
+
+        df[column_names.TIMESTAMP] = timestamp

@@ -9,6 +9,8 @@ from boiler.data_processing.beetween_filter_algorithm \
     import AbstractTimestampFilterAlgorithm, LeftClosedTimestampFilterAlgorithm
 from boiler.weather.io.abstract_async_weather_loader import AbstractAsyncWeatherLoader
 from boiler.weather.io.abstract_sync_weather_reader import AbstractSyncWeatherReader
+
+from boiler_softm.constants.config_data_server import DATA_SERVER, GET_WEATHER_FORECAST_METHOD
 from boiler_softm.logger import logger
 
 
@@ -18,7 +20,7 @@ class SoftMAsyncWeatherForecastOnlineLoader(AbstractAsyncWeatherLoader):
                  reader: AbstractSyncWeatherReader,
                  timestamp_filter_algorithm: AbstractTimestampFilterAlgorithm =
                  LeftClosedTimestampFilterAlgorithm(),
-                 server_address: str = "https://lysva.agt.town",
+                 server_address: str = DATA_SERVER,
                  http_proxy: Optional[str] = None,
                  sync_executor: ThreadPoolExecutor = None
                  ) -> None:
@@ -52,7 +54,8 @@ class SoftMAsyncWeatherForecastOnlineLoader(AbstractAsyncWeatherLoader):
         url = f"{self._weather_data_server_address}/JSON"
         # noinspection SpellCheckingInspection
         params = {
-            "method": "getPrognozT"
+            "method": GET_WEATHER_FORECAST_METHOD,
+            "argument": "{\"boiler_id\":1}"
         }
         async with aiohttp.request("GET", url=url, params=params, proxy=self._http_proxy) as response:
             raw_response = await response.read()
@@ -61,6 +64,7 @@ class SoftMAsyncWeatherForecastOnlineLoader(AbstractAsyncWeatherLoader):
                 f"Response status code is {response.status}"
             )
 
+        raw_response = await self._get_data(raw_response)
         return raw_response
 
     async def _read_weather_forecast(self,
@@ -86,3 +90,14 @@ class SoftMAsyncWeatherForecastOnlineLoader(AbstractAsyncWeatherLoader):
             end_datetime
         )
         return weather_df
+
+
+    async def _get_data(self, raw_response: bytes):
+        """
+        Возвращает только данные, удаляя всю не нужную составляющую полученного ответа с сервера
+        :param raw_response: ответ с сервера
+        :return: только нужные данные
+        """
+        start = raw_response.find(b'[')
+        end = raw_response.find(b']')
+        return raw_response[start:end + 1]

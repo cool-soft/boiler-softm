@@ -7,6 +7,8 @@ import aiohttp
 import pandas as pd
 from boiler.temp_graph.io.abstract_async_temp_graph_loader import AbstractAsyncTempGraphLoader
 from boiler.temp_graph.io.abstract_sync_temp_graph_reader import AbstractSyncTempGraphReader
+
+from boiler_softm.constants.config_data_server import DATA_SERVER, GET_TEMP_GRAPH_METHOD
 from boiler_softm.logger import logger
 
 
@@ -14,7 +16,7 @@ class SoftMAsyncTempGraphOnlineLoader(AbstractAsyncTempGraphLoader):
 
     def __init__(self,
                  reader: AbstractSyncTempGraphReader,
-                 server_address: str = "https://lysva.agt.town",
+                 server_address: str = DATA_SERVER,
                  http_proxy: Optional[str] = None,
                  sync_executor: Optional[ThreadPoolExecutor] = None
                  ) -> None:
@@ -40,13 +42,15 @@ class SoftMAsyncTempGraphOnlineLoader(AbstractAsyncTempGraphLoader):
     async def _get_temp_graph_from_server(self) -> bytes:
         url = f"{self._temp_graph_server_address}/JSON"
         params = {
-            "method": "getTempGraphic"
+            "method": GET_TEMP_GRAPH_METHOD,
+            "argument": "{\"boiler_id\":1}"
         }
         async with aiohttp.request("GET", url=url, params=params, proxy=self._http_proxy) as response:
             raw_response = await response.read()
             logger.debug(f"Temp graph is loaded from server. "
                                       f"Response status code is {response.status}")
 
+        raw_response = await self._get_data(raw_response)
         return raw_response
 
     async def _read_temp_graph(self, raw_temp_graph: bytes) -> pd.DataFrame:
@@ -58,3 +62,13 @@ class SoftMAsyncTempGraphOnlineLoader(AbstractAsyncTempGraphLoader):
                 binary_stream
             )
         return temp_graph_df
+
+    async def _get_data(self, raw_response: bytes):
+        """
+        Возвращает только данные, удаляя всю не нужную составляющую полученного ответа с сервера
+        :param raw_response: ответ с сервера
+        :return: только нужные данные
+        """
+        start = raw_response.find(b'[')
+        end = raw_response.find(b']')
+        return raw_response[start:end + 1]

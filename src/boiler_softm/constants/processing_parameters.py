@@ -42,7 +42,8 @@ TEMP_GRAPH_COLUMN_NAMES_EQUALS = {
     softm_column_names.TEMP_GRAPH_TEMP_AT_OUT: column_names.BACKWARD_PIPE_COOLANT_TEMP
 }
 WEATHER_INFO_COLUMN_EQUALS = {
-    softm_column_names.WEATHER_TEMP: column_names.WEATHER_TEMP
+    softm_column_names.WEATHER_TEMP: column_names.WEATHER_TEMP,
+    softm_column_names.WEATHER_TIMESTAMP: column_names.TIMESTAMP
 }
 HEATING_OBJ_COLUMN_NAMES_EQUALS = {
     softm_column_names.HEATING_SYSTEM_TIMESTAMP: column_names.TIMESTAMP,

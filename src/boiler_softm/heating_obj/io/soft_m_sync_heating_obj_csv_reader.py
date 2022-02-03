@@ -96,7 +96,7 @@ class SoftMSyncHeatingObjCSVReader(AbstractSyncHeatingObjReader):
         logger.debug("Converting values to float")
         df = df.copy()
         for column_name in self._float_columns:
-            df[column_name] = df[column_name].apply(str).replace(",", ".", regex=False)
+            df[column_name] = df[column_name].apply(str).replace(",", ".", regex=True) #regex=False - ruEdit
             df[column_name] = df[column_name].apply(float)
         return df
 
