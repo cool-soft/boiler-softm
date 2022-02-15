@@ -37,6 +37,7 @@ class SoftMAsyncTempGraphOnlineLoader(AbstractAsyncTempGraphLoader):
         logger.debug("Loading temp graph")
         temp_graph_as_bytes = await self._get_temp_graph_from_server()
         temp_graph_df = await self._read_temp_graph(temp_graph_as_bytes)
+        logger.debug(f"{temp_graph_df}")
         return temp_graph_df
 
     async def _get_temp_graph_from_server(self) -> bytes:

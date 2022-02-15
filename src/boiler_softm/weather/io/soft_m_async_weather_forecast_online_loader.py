@@ -12,6 +12,7 @@ from boiler.weather.io.abstract_sync_weather_reader import AbstractSyncWeatherRe
 
 from boiler_softm.constants.config_data_server import DATA_SERVER, GET_WEATHER_FORECAST_METHOD
 from boiler_softm.logger import logger
+from backend.db.services import add_weather_to_db
 
 
 class SoftMAsyncWeatherForecastOnlineLoader(AbstractAsyncWeatherLoader):
@@ -48,6 +49,9 @@ class SoftMAsyncWeatherForecastOnlineLoader(AbstractAsyncWeatherLoader):
         weather_df = await self._read_weather_forecast(raw_weather_forecast)
         weather_df = self._filter_by_timestamp(end_datetime, start_datetime, weather_df)
         logger.debug(f"Gathered {len(weather_df)} weather forecast items")
+
+        add_weather_to_db(predicted_weather_df=weather_df)
+
         return weather_df
 
     async def _get_forecast_from_server(self) -> bytes:
