@@ -16,11 +16,14 @@ class TestSoftMSyncTempGraphOnlineLoader:
     @pytest.fixture
     def loader(self, reader, is_need_proxy, http_proxy_address):
         http_proxy = None
+        https_proxy = None
         if is_need_proxy:
             http_proxy = http_proxy_address
+            https_proxy = http_proxy_address
         loader = SoftMSyncTempGraphOnlineLoader(
             reader=reader,
-            http_proxy=http_proxy
+            http_proxy=http_proxy,
+            https_proxy=https_proxy
         )
         return loader
 

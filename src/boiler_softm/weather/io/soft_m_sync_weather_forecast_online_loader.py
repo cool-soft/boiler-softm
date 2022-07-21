@@ -1,12 +1,12 @@
-import io
-from typing import Optional, Union
+from typing import Optional
 
-import requests
 import pandas as pd
+import requests
 from boiler.data_processing.beetween_filter_algorithm \
     import AbstractTimestampFilterAlgorithm, LeftClosedTimestampFilterAlgorithm
 from boiler.weather.io.abstract_sync_weather_loader import AbstractSyncWeatherLoader
 from boiler.weather.io.abstract_sync_weather_reader import AbstractSyncWeatherReader
+
 from boiler_softm.logging import logger
 
 
@@ -18,13 +18,16 @@ class SoftMSyncWeatherForecastOnlineLoader(AbstractSyncWeatherLoader):
                  LeftClosedTimestampFilterAlgorithm(),
                  server_address: str = "https://lysva.agt.town",
                  http_proxy: Optional[str] = None,
+                 https_proxy: Optional[str] = None
                  ) -> None:
         self._weather_reader = reader
         self._weather_data_server_address = server_address
         self._timestamp_filter_algorithm = timestamp_filter_algorithm
-        self._proxies = None
+        self._proxies = {}
         if http_proxy is not None:
-            self._proxies = {"http": http_proxy}
+            self._proxies.update({"http": http_proxy})
+        if https_proxy is not None:
+            self._proxies.update({"https": https_proxy})
         logger.debug(
             f"Creating instance: "
             f"reader: {self._weather_reader} "

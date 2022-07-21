@@ -13,13 +13,16 @@ class SoftMSyncTempGraphOnlineLoader(AbstractSyncTempGraphLoader):
     def __init__(self,
                  reader: AbstractSyncTempGraphReader,
                  server_address: str = "https://lysva.agt.town",
-                 http_proxy: Optional[str] = None
+                 http_proxy: Optional[str] = None,
+                 https_proxy: Optional[str] = None
                  ) -> None:
         self._temp_graph_reader = reader
         self._temp_graph_server_address = server_address
-        self._proxies = None
+        self._proxies = {}
         if http_proxy is not None:
-            self._proxies = {"https": http_proxy}
+            self._proxies.update({"http": http_proxy})
+        if https_proxy is not None:
+            self._proxies.update({"https": https_proxy})
 
         logger.debug(
             f"Creating instance: "
