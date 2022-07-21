@@ -55,7 +55,6 @@ jobs:
         run: coverage xml -o ${{ env.COVERAGE_XML_REPORT_PATH }}
       - name: "Push coverage xml report to codacy"
         uses: codacy/codacy-coverage-reporter-action@v1
-        if: ${{!cancelled()}}
         with:
           project-token: ${{ secrets.CODACY_PROJECT_API_TOKEN }}
           coverage-reports: ${{ env.COVERAGE_XML_REPORT_PATH }}
