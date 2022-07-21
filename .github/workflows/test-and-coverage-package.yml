@@ -5,11 +5,11 @@ jobs:
   test-and-coverage-package:
     runs-on: ubuntu-latest
     env:
-      HTTP_PROXY_HOSTNAME: "localhost"
+      HTTP_PROXY_ADDRESS: "localhost"
       HTTP_PROXY_PORT: 8080
       SSH_PROXY_ADDRESS: ${{secrets.SSH_PROXY_ADDRESS}}
       SSH_PROXY_PRIVATE_KEY: ${{secrets.SSH_PROXY_PRIVATE_KEY}}
-      SSH_PROXY_PRIVATE_KEY_PATH: "/tmp/id_rsa"
+      SSH_PROXY_PRIVATE_KEY_PATH: /tmp/id_rsa
       TEST_WITH_PROXY: True
       COVERAGE_HTML_REPORT_PATH: /tmp/coverage_html_report
       COVERAGE_XML_REPORT_PATH: /tmp/coverage_xml_report.xml
