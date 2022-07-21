@@ -9,7 +9,7 @@ from boiler.data_processing.value_interpolation_algorithm import LinearInsideVal
 from boiler.data_processing.value_interpolation_algorithm import LinearOutsideValueInterpolationAlgorithm
 
 from boiler_softm.constants.time_tick import TIME_TICK
-from boiler_softm.weather.io.soft_m_async_weather_forecast_online_loader import SoftMAsyncWeatherForecastOnlineLoader
+from boiler_softm.weather.io.soft_m_sync_weather_forecast_online_loader import SoftMSyncWeatherForecastOnlineLoader
 from boiler_softm.weather.io.soft_m_sync_weather_forecast_json_reader import SoftMSyncWeatherForecastJSONReader
 from boiler_softm.weather.processing import SoftMWeatherProcessor
 
@@ -26,15 +26,13 @@ class TestSoftMWeatherProcessor:
 
     @pytest.fixture
     def loader(self, reader, is_need_proxy, http_proxy_address):
+        http_proxy = None
         if is_need_proxy:
-            loader = SoftMAsyncWeatherForecastOnlineLoader(
-                reader=reader,
-                http_proxy=http_proxy_address
-            )
-        else:
-            loader = SoftMAsyncWeatherForecastOnlineLoader(
-                reader=reader
-            )
+            http_proxy = http_proxy_address
+        loader = SoftMSyncWeatherForecastOnlineLoader(
+            reader=reader,
+            http_proxy=http_proxy
+        )
         return loader
 
     @pytest.fixture
@@ -54,9 +52,8 @@ class TestSoftMWeatherProcessor:
             internal_values_interpolation_algorithm=LinearOutsideValueInterpolationAlgorithm()
         )
 
-    @pytest.mark.asyncio
-    async def test_processor(self, loader, processor, timestamp_round_algorithm):
-        weather_forecast = await loader.load_weather(self.start_timestamp, self.end_timestamp)
+    def test_processor(self, loader, processor, timestamp_round_algorithm):
+        weather_forecast = loader.load_weather(self.start_timestamp, self.end_timestamp)
         processed_forecast = processor.process_weather_df(
             weather_forecast,
             self.start_timestamp,

@@ -1,10 +1,11 @@
 import io
+from datetime import tzinfo
 from typing import BinaryIO
 
 import pandas as pd
 from boiler.constants import column_names
 from boiler.weather.io.abstract_sync_weather_reader import AbstractSyncWeatherReader
-from boiler_softm.logger import logger
+from boiler_softm.logging import logger
 
 import boiler_softm.constants.column_names as soft_m_column_names
 import boiler_softm.constants.processing_parameters
@@ -12,10 +13,9 @@ import boiler_softm.constants.processing_parameters
 
 class SoftMSyncWeatherForecastJSONReader(AbstractSyncWeatherReader):
 
-    # TODO: указать тип данных для временной зоны
     def __init__(self,
                  encoding: str = "utf-8",
-                 weather_data_timezone=None
+                 weather_data_timezone: tzinfo = None
                  ) -> None:
         self._weather_data_timezone = weather_data_timezone
         self._encoding = encoding

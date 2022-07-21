@@ -3,11 +3,11 @@ from boiler.constants import column_names
 # noinspection PyProtectedMember
 from pandas.api.types import is_numeric_dtype
 
-from boiler_softm.temp_graph.io.soft_m_async_temp_graph_online_loader import SoftMAsyncTempGraphOnlineLoader
+from boiler_softm.temp_graph.io.soft_m_sync_temp_graph_online_loader import SoftMSyncTempGraphOnlineLoader
 from boiler_softm.temp_graph.io.soft_m_sync_temp_graph_json_reader import SoftMSyncTempGraphJSONReader
 
 
-class TestSoftMAsyncTempGraphOnlineLoader:
+class TestSoftMSyncTempGraphOnlineLoader:
 
     @pytest.fixture
     def reader(self):
@@ -15,20 +15,17 @@ class TestSoftMAsyncTempGraphOnlineLoader:
 
     @pytest.fixture
     def loader(self, reader, is_need_proxy, http_proxy_address):
+        http_proxy = None
         if is_need_proxy:
-            loader = SoftMAsyncTempGraphOnlineLoader(
-                reader=reader,
-                http_proxy=http_proxy_address
-            )
-        else:
-            loader = SoftMAsyncTempGraphOnlineLoader(
-                reader=reader
-            )
+            http_proxy = http_proxy_address
+        loader = SoftMSyncTempGraphOnlineLoader(
+            reader=reader,
+            http_proxy=http_proxy
+        )
         return loader
 
-    @pytest.mark.asyncio
-    async def test_soft_m_async_temp_graph_online_loader(self, loader):
-        temp_graph_df = await loader.load_temp_graph()
+    def test_soft_m_sync_temp_graph_online_loader(self, loader):
+        temp_graph_df = loader.load_temp_graph()
 
         assert not temp_graph_df.empty
 

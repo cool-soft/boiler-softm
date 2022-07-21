@@ -4,7 +4,7 @@ import pandas as pd
 from boiler.constants import column_names
 from boiler.data_processing.other import parse_datetime
 from boiler.heating_obj.io.abstract_sync_heating_obj_reader import AbstractSyncHeatingObjReader
-from boiler_softm.logger import logger
+from boiler_softm.logging import logger
 
 from boiler_softm.constants import circuit_ids_equal as soft_m_circuit_ids_equal
 from boiler_softm.constants import column_names as soft_m_column_names
