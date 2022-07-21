@@ -19,9 +19,7 @@ class SoftMSyncTempGraphOnlineLoader(AbstractSyncTempGraphLoader):
         self._temp_graph_server_address = server_address
         self._proxies = None
         if http_proxy is not None:
-            self._proxies = {"http": http_proxy}
-
-        raise ValueError(self._proxies)
+            self._proxies = {"https": http_proxy}
 
         logger.debug(
             f"Creating instance: "
