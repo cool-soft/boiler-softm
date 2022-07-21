@@ -15,5 +15,4 @@ def is_need_proxy():
 def http_proxy_address():
     http_proxy_host = os.getenv("HTTP_PROXY_ADDRESS")
     http_proxy_port = os.getenv("HTTP_PROXY_PORT")
-    raise ValueError(f"http://{http_proxy_host}:{http_proxy_port}")
     return f"http://{http_proxy_host}:{http_proxy_port}"

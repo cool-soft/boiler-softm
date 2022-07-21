@@ -21,6 +21,8 @@ class SoftMSyncTempGraphOnlineLoader(AbstractSyncTempGraphLoader):
         if http_proxy is not None:
             self._proxies = {"http": http_proxy}
 
+        raise ValueError(self._proxies)
+
         logger.debug(
             f"Creating instance: "
             f"reader: {self._temp_graph_reader} "
