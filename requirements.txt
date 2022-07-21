@@ -1,6 +1,6 @@
 atomicwrites==1.4.1
 attrs==21.4.0
-boiler git+https://github.com/cool-soft/boiler.git@master
+boiler @ git+https://github.com/cool-soft/boiler.git@master
 certifi==2022.6.15
 charset-normalizer==2.1.0
 colorama==0.4.5
