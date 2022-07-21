@@ -2,7 +2,7 @@ from typing import List, BinaryIO
 
 import pandas as pd
 from boiler.constants import column_names
-from boiler.data_processing.other import parse_datetime
+from boiler.data_processing.timestamp_parsing_algorithm import AbstractTimestampParsingAlgorithm
 from boiler.heating_obj.io.abstract_sync_heating_obj_reader import AbstractSyncHeatingObjReader
 from boiler_softm.logging import logger
 
@@ -14,8 +14,7 @@ from boiler_softm.constants import processing_parameters
 class SoftMSyncHeatingObjCSVReader(AbstractSyncHeatingObjReader):
 
     def __init__(self,
-                 timestamp_parse_patterns: List[str],
-                 timestamp_timezone,
+                 timestamp_parser: AbstractTimestampParsingAlgorithm,
                  need_columns: List[str],
                  float_columns: List[str],
                  water_temp_columns: List[str],
@@ -23,8 +22,7 @@ class SoftMSyncHeatingObjCSVReader(AbstractSyncHeatingObjReader):
                  encoding: str = "utf-8"
                  ) -> None:
         self._encoding = encoding
-        self._timestamp_timezone = timestamp_timezone
-        self._timestamp_parse_patterns = timestamp_parse_patterns
+        self._timestamp_parser = timestamp_parser
         self._need_circuit = need_circuit
         self._need_columns = need_columns
         self._float_columns = float_columns
@@ -36,8 +34,7 @@ class SoftMSyncHeatingObjCSVReader(AbstractSyncHeatingObjReader):
         logger.debug(
             f"Creating instance:"
             f"encoding: {self._encoding}"
-            f"timestamp_timezone: {self._timestamp_timezone}"
-            f"timestamp_parse_patterns: {self._timestamp_parse_patterns}"
+            f"timestamp parser: {self._timestamp_parser}"
             f"need_circuit: {self._need_circuit}"
             f"need_columns: {self._need_columns}"
             f"float_columns: {self._float_columns}"
@@ -88,7 +85,7 @@ class SoftMSyncHeatingObjCSVReader(AbstractSyncHeatingObjReader):
         logger.debug("Parsing datetime")
         df = df.copy()
         df[column_names.TIMESTAMP] = df[column_names.TIMESTAMP].apply(
-            parse_datetime, args=(self._timestamp_parse_patterns, self._timestamp_timezone)
+            self._timestamp_parser.parse_datetime
         )
         return df
 
