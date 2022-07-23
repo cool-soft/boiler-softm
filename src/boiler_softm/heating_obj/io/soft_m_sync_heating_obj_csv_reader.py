@@ -4,11 +4,12 @@ import pandas as pd
 from boiler.constants import column_names
 from boiler.data_processing.timestamp_parsing_algorithm import AbstractTimestampParsingAlgorithm
 from boiler.heating_obj.io.abstract_sync_heating_obj_reader import AbstractSyncHeatingObjReader
-from boiler_softm.logging import logger
 
-from boiler_softm.constants import circuit_ids_equal as soft_m_circuit_ids_equal
+import boiler_softm.constants.converting_parameters
+from boiler_softm.constants import circuit_ids
 from boiler_softm.constants import column_names as soft_m_column_names
-from boiler_softm.constants import processing_parameters
+from boiler_softm.constants import processing
+from boiler_softm.logging import logger
 
 
 class SoftMSyncHeatingObjCSVReader(AbstractSyncHeatingObjReader):
@@ -28,8 +29,8 @@ class SoftMSyncHeatingObjCSVReader(AbstractSyncHeatingObjReader):
         self._float_columns = float_columns
         self._water_temp_columns = water_temp_columns
 
-        self._circuit_id_equals = soft_m_circuit_ids_equal.CIRCUIT_ID_EQUALS
-        self._column_names_equals = processing_parameters.HEATING_OBJ_COLUMN_NAMES_EQUALS
+        self._circuit_id_equals = boiler_softm.constants.converting_parameters.LYSVA_CIRCUIT_EQUALS
+        self._column_names_equals = boiler_softm.constants.converting_parameters.LYSVA_HEATING_OBJ_COLUMN_NAMES_EQUALS
 
         logger.debug(
             f"Creating instance:"
@@ -67,7 +68,7 @@ class SoftMSyncHeatingObjCSVReader(AbstractSyncHeatingObjReader):
     def _exclude_unused_circuits(self, df: pd.DataFrame) -> pd.DataFrame:
         logger.debug("Excluding unused circuits")
         renamed_circuits = \
-            df[soft_m_column_names.HEATING_SYSTEM_CIRCUIT_ID].apply(str).replace(self._circuit_id_equals)
+            df[soft_m_column_names.LYSVA_HEATING_SYSTEM_CIRCUIT_ID].apply(str).replace(self._circuit_id_equals)
         df = df[renamed_circuits == self._need_circuit].copy()
         return df
 

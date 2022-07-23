@@ -1,3 +1,4 @@
+import json
 from typing import Optional
 
 import pandas as pd
@@ -5,19 +6,22 @@ import requests
 from boiler.temp_graph.io.abstract_sync_temp_graph_loader import AbstractSyncTempGraphLoader
 from boiler.temp_graph.io.abstract_sync_temp_graph_reader import AbstractSyncTempGraphReader
 
+from boiler_softm.constants import api_constants
 from boiler_softm.logging import logger
 
 
-class SoftMSyncTempGraphOnlineLoader(AbstractSyncTempGraphLoader):
+class SoftMChernushkaSyncTempGraphOnlineLoader(AbstractSyncTempGraphLoader):
 
     def __init__(self,
                  reader: AbstractSyncTempGraphReader,
-                 server_address: str = "https://lysva.agt.town",
+                 boiler_id: int = 1,
+                 api_base: str = api_constants.CHERNUSHKA_API_BASE,
                  http_proxy: Optional[str] = None,
                  https_proxy: Optional[str] = None
                  ) -> None:
         self._temp_graph_reader = reader
-        self._temp_graph_server_address = server_address
+        self._boiler_id = boiler_id
+        self._api_base = api_base
         self._proxies = {}
         if http_proxy is not None:
             self._proxies.update({"http": http_proxy})
@@ -27,15 +31,19 @@ class SoftMSyncTempGraphOnlineLoader(AbstractSyncTempGraphLoader):
         logger.debug(
             f"Creating instance: "
             f"reader: {self._temp_graph_reader} "
-            f"server_address: {self._temp_graph_server_address} "
+            f"boiler_id: {self._boiler_id} "
+            f"api_base: {self._api_base} "
             f"http_proxy: {http_proxy} "
         )
 
     def load_temp_graph(self) -> pd.DataFrame:
         logger.debug("Loading temp graph")
-        url = f"{self._temp_graph_server_address}/JSON"
+        url = f"{self._api_base}/JSON"
         params = {
-            "method": "getTempGraphic"
+            "method": "ai_getTempGraphic",
+            "argument": json.dumps(
+                {"boiler_id": self._boiler_id}
+            )
         }
         with requests.get(url=url, params=params, proxies=self._proxies, stream=True) as response:
             logger.debug(f"Temp graph is loaded from server. Status code is {response.status_code}")

@@ -2,18 +2,20 @@ from typing import BinaryIO
 
 import pandas as pd
 from boiler.temp_graph.io.abstract_sync_temp_graph_reader import AbstractSyncTempGraphReader
+
+import boiler_softm.constants.converting_parameters
 from boiler_softm.logging import logger
 
-from boiler_softm.constants import processing_parameters
+from boiler_softm.constants import processing
 
 
-class SoftMSyncTempGraphJSONReader(AbstractSyncTempGraphReader):
+class SoftMLysvaSyncTempGraphOnlineReader(AbstractSyncTempGraphReader):
 
     def __init__(self,
                  encoding: str = "utf-8"
                  ) -> None:
         self._encoding = encoding
-        self._column_names_equal = processing_parameters.TEMP_GRAPH_COLUMN_NAMES_EQUALS
+        self._column_names_equal = boiler_softm.constants.converting_parameters.LYSVA_TEMP_GRAPH_COLUMN_NAMES_EQUALS
 
         logger.debug(
             f"Creating instance:"

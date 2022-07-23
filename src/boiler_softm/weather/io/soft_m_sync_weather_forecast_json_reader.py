@@ -5,10 +5,12 @@ from typing import BinaryIO
 import pandas as pd
 from boiler.constants import column_names
 from boiler.weather.io.abstract_sync_weather_reader import AbstractSyncWeatherReader
+
+import boiler_softm.constants.converting_parameters
 from boiler_softm.logging import logger
 
 import boiler_softm.constants.column_names as soft_m_column_names
-import boiler_softm.constants.processing_parameters
+import boiler_softm.constants.processing
 
 
 class SoftMSyncWeatherForecastJSONReader(AbstractSyncWeatherReader):
@@ -20,7 +22,7 @@ class SoftMSyncWeatherForecastJSONReader(AbstractSyncWeatherReader):
         self._weather_data_timezone = weather_data_timezone
         self._encoding = encoding
 
-        self._column_names_equals = boiler_softm.constants.processing_parameters.WEATHER_INFO_COLUMN_EQUALS
+        self._column_names_equals = boiler_softm.constants.converting_parameters.LYSVA_WEATHER_INFO_COLUMN_EQUALS
 
         logger.debug(
             f"Creating instance:"
@@ -44,12 +46,12 @@ class SoftMSyncWeatherForecastJSONReader(AbstractSyncWeatherReader):
     def _convert_date_and_time_to_timestamp(self, df: pd.DataFrame) -> None:
         logger.debug("Converting dates and time to timestamp")
 
-        dates_as_str = df[soft_m_column_names.WEATHER_DATE]
-        time_as_str = df[soft_m_column_names.WEATHER_TIME]
+        dates_as_str = df[soft_m_column_names.LYSVA_WEATHER_DATE]
+        time_as_str = df[soft_m_column_names.LYSVA_WEATHER_TIME]
         datetime_as_str = dates_as_str.str.cat(time_as_str, sep=" ")
         timestamp = pd.to_datetime(datetime_as_str)
         timestamp = timestamp.dt.tz_localize(self._weather_data_timezone)
 
         df[column_names.TIMESTAMP] = timestamp
-        del df[soft_m_column_names.WEATHER_TIME]
-        del df[soft_m_column_names.WEATHER_DATE]
+        del df[soft_m_column_names.LYSVA_WEATHER_TIME]
+        del df[soft_m_column_names.LYSVA_WEATHER_DATE]
