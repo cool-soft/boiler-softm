@@ -1,6 +1,6 @@
 atomicwrites==1.4.1
 attrs==21.4.0
-boiler @ git+https://github.com/cool-soft/boiler.git@main
+git+https://github.com/cool-soft/boiler.git@main#egg=boiler
 certifi==2022.6.15
 charset-normalizer==2.1.0
 colorama==0.4.5
@@ -13,6 +13,7 @@ pandas==1.4.3
 pluggy==1.0.0
 py==1.11.0
 pyparsing==3.0.9
+pysocks==1.7.1
 pytest==7.1.2
 pytest-html==3.1.1
 pytest-metadata==2.0.2
