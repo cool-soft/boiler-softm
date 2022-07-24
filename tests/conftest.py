@@ -12,7 +12,7 @@ def is_need_proxy():
 
 
 @pytest.fixture(scope="session")
-def http_proxy_address():
-    http_proxy_host = os.getenv("HTTP_PROXY_ADDRESS")
-    http_proxy_port = os.getenv("HTTP_PROXY_PORT")
-    return f"http://{http_proxy_host}:{http_proxy_port}"
+def proxy_address():
+    proxy_host = os.getenv("SOCKS_PROXY_ADDRESS")
+    proxy_port = os.getenv("SOCKS_PROXY_PORT")
+    return f"socks5://{proxy_host}:{proxy_port}"
